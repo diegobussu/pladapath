@@ -1,0 +1,163 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}PLADAPATH - Versions{% endblock %}
+
+{% block body %}
+    {% block javascripts %}
+        <script src="{{ asset('js/jquery-3.6.0.min.js') }}"></script>
+        <script>
+            $(document).ready(function() {
+                // Function to set a cookie
+                function setCookie(cname, cvalue, exdays) {
+                    var d = new Date();
+                    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+                    var expires = "expires="+d.toUTCString();
+                    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+                }
+
+                // Function to get a cookie
+                function getCookie(cname) {
+                    var name = cname + "=";
+                    var decodedCookie = decodeURIComponent(document.cookie);
+                    var ca = decodedCookie.split(';');
+                    for(var i = 0; i < ca.length; i++) {
+                        var c = ca[i];
+                        while (c.charAt(0) == ' ') {
+                            c = c.substring(1);
+                        }
+                        if (c.indexOf(name) == 0) {
+                            return c.substring(name.length, c.length);
+                        }
+                    }
+                    return "";
+                }
+
+                // Initially hide all panels
+                $(".content-panel").hide();
+                
+                // Check if there's a stored panelID in the cookie
+                var lastReleaseNote = getCookie("lastReleaseNote");
+                var lastReleaseNoteButton = getCookie("lastReleaseNoteButton");
+                if (lastReleaseNote) {
+                    $("#" + lastReleaseNote).show();
+                    $(".buttons .button[data-id='" + lastReleaseNoteButton + "']").addClass("active");
+                } else {
+                    $("#mypoolvm").show(); // Show a default panel if no cookie is found
+                    $(".buttons .button[data-id='mypoolvm']").addClass("active"); // Set default button as active
+                }
+
+                // When a button in the nav is clicked
+                $(".buttons .button").click(function() {
+                    var panelID = $(this).data("id");
+
+                    // Hide all panels
+                    $(".content-panel").hide();
+
+                    // Show the selected panel
+                    $("#" + panelID).show();
+
+                    // Store the selected panelID and active button in cookies
+                    setCookie("lastReleaseNote", panelID, 30); // Cookie expires in 30 days
+                    setCookie("lastReleaseNoteButton", panelID, 30); // Cookie expires in 30 days
+
+                    // Remove "active" class from all buttons and add it to the clicked button
+                    $(".buttons .button").removeClass("active");
+                    $(this).addClass("active");
+                });
+            });
+        </script>
+    {% endblock %}
+
+    <!-- BOUTTONS DE NAVIGATIONS DES VERSIONS -->
+    <div class="container mt-5">
+        <div class="buttons d-flex justify-content-center nav mb-3">
+            <button data-id="0" class="button">1.0.0</button>
+            <button data-id="1" class="button">1.0.1</button>
+        </div>
+    </div>
+
+
+    <!-- v1.0.0 -->
+    <div class="container content-panel" id="0">
+        <div class="row justify-content-center">
+            <div class="scroll-setting">
+                <table class="table table-hover table-bordered">
+                    <thead>
+                        <tr>
+                            <th scope="col">Ajouté le</th>
+                            <th scope="col">Fonctionnalité</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>21/02/2024</td>
+                            <td>Historique des traitements pour les caisses</td>
+                        </tr>
+                        <tr>
+                            <td>21/02/2024</td>
+                            <td>Historique par utilisateur (voir page profil)</td>
+                        </tr>
+                        <tr>
+                            <td>21/02/2024</td>
+                            <td>Historique des annonces</td>
+                        </tr>
+                        <tr>
+                            <td>21/02/2024</td>
+                            <td>Page de contact fonctionnel</td>
+                        </tr>
+                        <tr>
+                            <td>21/02/2024</td>
+                            <td>Avancer ou reculer des traitements (via des filtres)</td>
+                        </tr>
+                        <tr>
+                            <td>15/03/2024</td>
+                            <td>Ajout du mode nuit</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- v1.0.1 -->
+    <div class="container content-panel version-panel" id="1">
+        <div class="row justify-content-center">
+            <div class="scroll-setting">
+                <table class="table table-hover table-bordered">
+                    <thead>
+                        <tr>
+                            <th scope="col">Ajouté le</th>
+                            <th scope="col">Fonctionnalité</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>23/05/2024</td>
+                            <td>Mise en place de la périodicité pour les non puma (hebdo, mensuel, trimestriel) avec une période de fin (jusqu'a 50ans) à la création d'un scénario</td>
+                        </tr>
+                        <tr>
+                            <td>23/05/2024</td>
+                            <td>Suppression des informations des traitements au survol sur le calendrier dans le mode liste</td>
+                        </tr>
+                        <tr>
+                            <td>23/05/2024</td>
+                            <td>Filtre mis en place dans paramètre/traitement</td>
+                        </tr>
+                        <tr>
+                            <td>23/05/2024</td>
+                            <td>Possibilité de supprimer tous les traitements via une caisse/scénario/pool/période et une date dans paramètre/traitement/option</td>
+                        </tr>
+                        <tr>
+                            <td>24/05/2024</td>
+                            <td>Ajout d'un bouton "Periodique" dans paramètre/traitement afin de filtrer les traitements contenant une répétion sur une x durée.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+
+{% endblock %}

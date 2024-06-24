@@ -1,0 +1,824 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}PLADAPATH - Accueil{% endblock %}
+
+{% block body %}
+
+{% block javascripts %}
+    {# {{ encore_entry_script_tags('app') }} #}
+    <!-- Include a specific version of Moment.js -->
+    <script src="{{ asset('js/moment.js') }}"></script>
+    <script src="{{ asset('js/chart.js') }}"></script>
+    <script src="{{ asset('js/home.js') }}"></script>
+    <script src="{{ asset('js/jquery-3.6.0.min.js') }}"></script>
+    <script src="{{ asset('js/popper.min.js') }}"></script>
+    <script src="{{ asset('js/bootstrap.min.js') }}"></script>
+    <script src="{{ asset('js/tippy-bundle.umd.js') }}"></script>
+    <script src="{{ asset('js/etapePuma.js') }}"></script>
+    <script src="{{ asset('js/traitement.js') }}"></script>
+    <script src="{{ asset('js/calendar/dist/index.global.js') }}"></script>
+    <script src="{{ asset('js/calendar/packages/core/locales/fr.global.min.js') }}"></script>
+    <script src="{{ asset('js/central_calendar.js') }}"></script>
+{% endblock %}
+
+<style>
+    .popup-error {
+        display: block;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 15px;
+        border: 1px solid #ccc;
+        background-color: #D14747;
+        color: #fff;
+        z-index: 1000;
+        width: 50%;
+        max-width: 400px;
+        text-align: center;
+        box-shadow: 0px 0px 10px 0px #D14747;
+        border-radius: 10px;
+    }
+
+    .popup-success {
+        display: block;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 15px;
+        border: 1px solid #ccc;
+        background-color: #0c419a;
+        color: #fff;
+        z-index: 1000;
+        width: 50%;
+        max-width: 400px;
+        text-align: center;
+        box-shadow: 0px 0px 10px 0px #0c419a;
+        border-radius: 10px;
+    }
+
+    body.dark-mode .popup-success {
+        display: block;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 15px;
+        border: 1px solid #ccc;
+        background-color: #3e3e42;
+        color: #fff;
+        z-index: 1000;
+        width: 50%;
+        max-width: 400px;
+        text-align: center;
+        box-shadow: 0px 0px 10px 0px #B5B5B5;
+        border-radius: 10px;
+    }
+</style>
+
+{% for flashError in app.flashes('error') %}
+    <div id="errorFlash" class="popup-error" style="width: 50%;">
+        {{ flashError }}
+    </div>
+    <script>
+        setTimeout(function() {
+            document.getElementById('errorFlash').style.display = 'none';
+        }, 5000); // (5 secondes)
+    </script>
+{% endfor %}
+
+{% for flashSuccess in app.flashes('success') %}
+    <div id="successFlash" class="popup-success" style="width: 50%;">
+        {{ flashSuccess }}
+    </div>
+    <script>
+        setTimeout(function() {
+            document.getElementById('successFlash').style.display = 'none';
+        }, 1000); // (1 secondes)
+    </script>
+{% endfor %}
+
+
+    <div class="container-fluid">
+        <div class="row justify-content-around" id="big_size">
+            {% if listAllMessage is defined and listAllMessage|length > 0 %}
+                <div class="overlay" id="popup">
+                    <div class="popup-content">
+                        <div class="popup-header mb-3">
+                            <div class="h1 mb-3">Annonces générales</div>
+                            <a href="{{ path('message_create') }}">
+                                <button id="add_annonces" class="button">
+                                    Ajouter
+                                </button>
+                            </a>
+                            <div class="popup-button" id="urgentButton"><strong>Urgent</strong></div>
+                            <div class="popup-button" id="importantButton"><strong>Important</strong></div>
+                            <div class="popup-button" id="normalButton"><strong>Normal</strong></div>
+                        </div>
+                        <div class="popup-messages">
+                            <ul id="message-list">
+                                {% for message in listAllMessage %}
+                                    {% if message.priorite == "urgent" %}
+                                        <li class="h6" data-priority="urgent">{{ message.auteur }} le {{ message.datecreation|date('d/m/Y à H:i:s') }}</li>
+                                        <li class="h5" data-priority="urgent">Maintenance du : {{ message.datedebut|date('d/m/Y à H:i:s') }} au {{ message.datefin|date('d/m/Y à H:i:s') }}</li><br>
+                                        <li class="h5" data-priority="urgent">Titre :<br> {{ message.titre|nl2br }}</li>
+                                        <li class="h5" data-priority="urgent" style="word-wrap: break-word; max-width: 100ch;">Contenu :<br> {{ message.contenu|nl2br }}</li><br>
+                                        <span>_________________________________________________________________</span><br><br>
+                                    {% endif %}
+                                {% endfor %}
+                                {% for message in listAllMessage %}
+                                    {% if message.priorite == "important" %}
+                                        <li class="h6" data-priority="important">{{ message.auteur }} le {{ message.datecreation|date('d/m/Y à H:i:s') }}</li>
+                                        <li class="h5" data-priority="important">Maintenance du : {{ message.datedebut|date('d/m/Y à H:i:s') }} au {{ message.datefin|date('d/m/Y à H:i:s') }}</li><br>
+                                        <li class="h5" data-priority="important">Titre :<br> {{ message.titre|nl2br }}</li>
+                                        <li class="h5" data-priority="important" style="word-wrap: break-word; max-width: 100ch;">Contenu :<br> {{ message.contenu|nl2br }}</li><br>
+                                        <span>_________________________________________________________________</span><br><br>
+                                    {% endif %}
+                                {% endfor %}
+                                {% for message in listAllMessage %}
+                                    {% if message.priorite == "normal" %}
+                                        <span class="h6" data-priority="normal">{{ message.auteur }} le {{ message.datecreation|date('d/m/Y à H:i:s') }}</li>
+                                        <li class="h5" data-priority="normal">Maintenance du : {{ message.datedebut|date('d/m/Y à H:i:s') }} au {{ message.datefin|date('d/m/Y à H:i:s') }}</li><br>
+                                        <li class="h5" data-priority="normal">Titre :<br> {{ message.titre|nl2br }}</li>
+                                        <li class="h5" data-priority="normal" style="word-wrap: break-word; max-width: 100ch;">Contenu :<br> {{ message.contenu|nl2br }}</li><br>
+                                        <span>_________________________________________________________________</span><br><br>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+
+            <div class="col-md-9 rounded">
+                <div class="calendar-container">
+                    <div id="calendar"></div>
+                </div>
+            </div>
+
+            <div class="col-md-3 rounded px-4" id="options">
+
+                <div class="col-md-12 rounded py-1" id="modalFiltre">
+                    <legend>Options de filtres<button id="legendColor" title="Code couleur">?</button></legend>
+                    <input type="text" id="rechercheTraitement" placeholder="Rechercher un traitement par son titre"><br><br>
+                    <button class="popup-button" id="caisseExploitBtn">Caisse Exp.</button>
+                    <button class="popup-button" id="poolBtn">Pool</button>
+                    <button class="popup-button" id="scenarioBtn">Scenario</button>
+                    <fieldset>
+                        <div class="scrollFiltre">
+                            <ul id="caisseExploitCheckboxes">
+                                {% set sortedCaisseList = listAllCaisseExploit|sort((a, b) => a.nomcaisse <=> b.nomcaisse) %}
+                                {% for caisse in sortedCaisseList %}
+                                    <input type="checkbox"></input>
+                                    <label>{{ caisse.nomcaisse }}</label><br>
+                                {% endfor %}
+                            </ul>
+
+
+                            <ul id="poolVmCheckboxes" style="display:none">
+                                {% set sortedPoolList = listAllPoolVM|sort((a, b) => a.nompool <=> b.nompool) %}
+                                {% for pool in sortedPoolList %}
+                                    <input type="checkbox"></input>
+                                    <label>{{ pool.nompool }}</label><br>
+                                {% endfor %}
+                            </ul>
+
+
+                            <ul id="scenarioCheckboxes" style="display:none">
+                                {% set sortedScenarioList = listAllScenario|sort((a, b) => a.nomscenario <=> b.nomscenario) %}
+                                {% for scenario in sortedScenarioList %}
+                                    <input type="checkbox"></input>
+                                    <label>{{ scenario.nomscenario }}</label><br>
+                                {% endfor %}
+                            </ul>
+                        <div>
+                    </fieldset>
+                </div>
+
+                <div class="col-md-12 rounded mt-3 py-1" id="modalFiltreCaisse">
+                    <fieldset>
+                        <legend>Liste des caisses</legend>
+                        <input type="text" id="recherche" placeholder="Rechercher une caisse">
+                        <div class="scrollCaisse" id="caisseScrollContainer">
+                            {% set sortedCaisseList = listAllCaisse|sort((a, b) => a.numcaisse <=> b.numcaisse) %}
+                            {% for caisse in sortedCaisseList %}
+                                <option class="caisse-option"><a href="{{ path('info_caisse', {'id': caisse.id}) }}" style="color: #fff;">{{ caisse.nomcaisse }} {{ caisse.numcaisse }}</a></option>
+                            {% endfor %}
+                            <div id="noCaisseFoundMessage" style="display: none; color: #fff;">Aucune caisse trouvée</div>
+                        </div>
+                    </fieldset>
+                    <img id="arrow" src="{{ asset('img/arrow.png') }}" alt="Flèche du bas" style="cursor: pointer;"></img>
+                </div>
+
+                <div class="col-md-12 mt-3 rounded" id="modalChart">
+                    <img id="statistiques" src="{{ asset('img/refresh.png') }}" width='20' height='20' title="Changer de vue" style="cursor: pointer">
+
+                    <button id="prevPageButton1" title="Pool précédente" style="display:none"></button> 
+                    <button id="nextPageButton1" title="Pool suivante" style="display:none"></button>
+                    <button id="prevPageButton" title="Process précédent" style="display:none"></button> 
+                    <button id="nextPageButton" title="Process suivant" style="display:none"></button>
+                    <p id="messageParagraph"></p>
+                    <canvas id="processUtilizationChart" title="Calcul uniquement les traitements 'en cours'"></canvas>
+                    <canvas id="vmUtilizationChart" title="Calcul uniquement les traitements 'en cours'"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <span id="nom_agent">Utilisateur connecté : {{ nom_agent }} {{ prenom_agent }}</span>
+    <img id="zoom" src="{{ asset('img/zoom.png') }}" title="Zoom">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div id="myModal" class="modal draggable">
+        <div class="modal-content">
+            <img id="refreshFormCreateTreatment" src="{{ asset('img/refresh1.png') }}" title="Rafraîchir">
+
+            <span id="closeCreate" class="close">&times;</span>
+            <h2>Ajouter un traitement</h2>
+            
+            <form method="post" action="{{ path('traitment_create') }}" id="traitment-form">
+                <div class="form-group">
+                <label>Caisse de traitement :</label>
+                    <select id="caisse" name="caisse">
+                        <option value="Tous" selected>Choisir une caisse</option>
+                            {% set sortedCaisseList = listAllCaisse|sort((a, b) => a.numcaisse <=> b.numcaisse) %}
+                            {% for caisse in sortedCaisseList %}
+                                <option value="{{ caisse.id }}">{{ caisse.nomcaisse }} {{ caisse.numcaisse }}</option>
+                            {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Caisse exploitante :</label>
+                    <select id="caisse_exploit" name="caisse_exploit">
+                        <option value="Tous" selected>Choisir une caisse</option>
+                            {% set sortedCaisseList = listAllCaisseExploit|sort((a, b) => a.numcaisse <=> b.numcaisse) %}
+                            {% for caisse in sortedCaisseList %}
+                                <option value="{{ caisse.id }}">{{ caisse.nomcaisse }} {{ caisse.numcaisse }}</option>
+                            {% endfor %}
+                    </select>
+                </div>
+
+
+                <div class="form-group">
+                    <label>Pool :</label>
+                    <select id="pool" name="pool[]">
+                        <option value="Tous" selected>Choisir une pool</option>
+                        {% set sortedPoolList = listAllPoolVM|sort((a, b) => a.nompool <=> b.nompool) %}
+                        {% for poolvm in sortedPoolList %}
+                            <option style="display: none;" value="{{ poolvm.id }}" name="pool[]" class="pool-option" data-caisse="{{ poolvm.idcaisseexploit.id }}">{{ poolvm.nompool }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <div id="addPool">
+                        <label><input type="checkbox" id="checkboxPool" style="visibility: hidden;">Ajouter une pool</label>
+                    </div>
+                </div>
+
+                <div class="form-group" style="display: none;" id="secondPool">
+                    <label>Seconde Pool :</label>
+                    <select id="pool1" name="pool[]">
+                        <option value="Tous" selected>Choisir une pool</option>
+                        {% set sortedPoolList = listAllPoolVM|sort((a, b) => a.nompool <=> b.nompool) %}
+                        {% for poolvm in sortedPoolList %}
+                            <option style="display: none;" value="{{ poolvm.id }}" name="pool[]" class="pool-option" data-caisse="{{ poolvm.idcaisseexploit.id }}">{{ poolvm.nompool }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <div style="display: none;" id="deletePool">
+                        <label><input type="checkbox" id="checkboxPool1" style="visibility: hidden;">Supprimer la pool</label>
+                    </div>
+                </div>
+
+
+
+
+
+                <div class="form-group">
+                    <label id="scenarioLabel" style="display: none;">Scenario :</label>
+                    <select id="scenario" name="scenario" style="display: none;">
+                        <option value="Tous" selected>Choisir un scenario</option>
+                        {% set sortedScenarioList = listAllScenario|sort((a, b) => a.nomscenario <=> b.nomscenario) %}
+                        {% for scenario in sortedScenarioList %}
+                            <option value="{{ scenario.id }}">{{ scenario.nomscenario }}</option>
+                        {% endfor %}
+                    </select>
+                    <label id="periodicity" style="color: #D14747;"></label>
+                </div>
+                
+
+                <div class="listProcess" style="display: none;" id="processList">
+                    <div class="form-group">
+                        <label id="processLabel">Process :</label><br>
+                        <input type="checkbox" id="selectAllCheckbox">Cocher tous les process</input>
+                        {% set sortedProcessList = listAllProcess|sort((a, b) => a.nomprocess <=> b.nomprocess) %}
+                        {% for process in sortedProcessList %}
+                        {% for scenario  in process.idscenario %}
+                            <div class="process-container" data-scenario="{{ scenario.id }}" style="display: none;">
+                                <input type="checkbox" class="process-checkbox" id="process_{{ process.id }}" name="process[]" value="{{ process.id }}">
+                                <label for="process_{{ process.id }}">{{ process.nomprocess }}</label>
+                            </div>
+                        {% endfor %}
+                        {% endfor %}
+                        <label id="vmMax" style="color: #D14747;"></label>
+                    </div>
+                </div> 
+
+                <div class="vm-container" style="display: none;" id="VmList">  
+                    <div class="form-group">
+                        <label>VM : </label><br>
+                        <input type="checkbox" id="selectAllVm">Cocher toutes les vms</input>
+                        {% set sortedVMList = listAllVM|sort((a, b) => a.nomvm <=> b.nomvm) %}
+                        {% for vm in sortedVMList %}
+                            <div class="vm-container" data-pool="{{ vm.poolvm.id }}">
+                                <input type="checkbox" class="vm-checkbox" id="vm_{{ vm.id }}" name="vm[]"  value="{{ vm.id }}">
+                                <label for="vm_{{ vm.id }}" class="unclickable-label">{{ vm.nomvm }}</label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="form-group">
+                    {% set sortedVMList = listAllVM|sort((a, b) => a.nomvm <=> b.nomvm) %}
+                        {% for vm in sortedVMList %}
+                            <div class="vm-container" data-second-pool="{{ vm.poolvm.id }}">
+                                <input type="checkbox" class="vm-checkbox" id="vm_{{ vm.id }}" name="vm[]"  value="{{ vm.id }}">
+                                <label for="vm_{{ vm.id }}" class="unclickable-label">{{ vm.nomvm }}</label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div> 
+
+
+                <div class="form-group">
+                    <label>Nbre de dossiers :</label>
+                    <input type="number" id="nbredossier" name="nbredossier">
+                </div>
+
+                <div class="form-group" id="tempsTraitementContainer" style="display: none;">
+                    <label>Temps du traitement (approximatif) :</label>
+                    <span id="result"></span>
+                </div>
+
+                <div class="form-group">
+                    <label id="WeekendsAndHolidays" style="color: #D14747;"></label>
+                    <label>Date de début :</label>
+                    <input type="datetime-local" id="datedebut" name="datedebut"></label>
+                </div>
+
+                <div class="form-group">
+                    <label>Date de fin :</label>
+                    <input type="datetime-local" id="datefin" name="datefin"></label>
+                </div>
+
+                <div class="form-group">
+                    <label id="etapeLabel" style="display: none;">Étape :</label>
+                    <select id="etape" name="etape" style="display: none;">
+                        <option value="Tous" selected>Choisir une étape</option>
+                        <option value="Étape 1">Étape 1</option>
+                        <option value="Étape 2">Étape 2</option>
+                        <option value="Étape 3">Étape 3</option>
+                        <option value="Étape 4">Étape 4</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="datesSelection" style="display: none;">
+                    <label id="WeekendsAndHolidays1" style="color: #D14747;"></label>
+                    <div id="etape2" class="datePicker">
+                        <label>Date début Étape 2 :</label>
+                        <input type="datetime-local" id="date_debut_etape_2" name="date_debut_etape_2">
+
+                        <label>Date fin Étape 2 :</label>
+                        <input type="datetime-local" id="date_fin_etape_2" name="date_fin_etape_2">
+                    </div><br>
+                    <div id="etape3" class="datePicker">
+                        <label>Date début Étape 3 :</label>
+                        <input type="datetime-local" id="date_debut_etape_3" name="date_debut_etape_3">
+
+                        <label>Date fin Étape 3 :</label>
+                        <input type="datetime-local" id="date_fin_etape_3" name="date_fin_etape_3">
+                    </div><br>
+                    <div id="etape4" class="datePicker">
+                        <label>Date début Étape 4 :</label>
+                        <input type="datetime-local" id="date_debut_etape_4" name="date_debut_etape_4">
+
+                        <label>Date fin Étape 4 :</label>
+                        <input type="datetime-local" id="date_fin_etape_4" name="date_fin_etape_4">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <button id="saveButton" class="btn-save">Ajouter</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div id="editModal" class="modal draggable">
+        <div class="modal-content">
+
+            <span id="closeEdit" class="close">&times;</span>
+            <h2>Modifier un traitement</h2>
+            
+            <form method="post" id="traitment-form-edit">
+                <div class="form-group">
+                <label>Caisse de traitement :</label>
+                    <select id="new_caisse" name="new_caisse">
+                        <option value="Tous" selected>Choisir une caisse</option>
+                            {% set sortedCaisseList = listAllCaisse|sort((a, b) => a.numcaisse <=> b.numcaisse) %}
+                            {% for caisse in sortedCaisseList %}
+                                <option value="{{ caisse.id }}">{{ caisse.nomcaisse }} {{ caisse.numcaisse }}</option>
+                            {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Caisse exploitante :</label>
+                    <select id="new_caisse_exploit" name="new_caisse_exploit">
+                        <option value="Tous" selected>Choisir une caisse</option>
+                            {% set sortedCaisseList = listAllCaisseExploit|sort((a, b) => a.numcaisse <=> b.numcaisse) %}
+                            {% for caisse in sortedCaisseList %}
+                                <option value="{{ caisse.id }}">{{ caisse.nomcaisse }} {{ caisse.numcaisse }}</option>
+                            {% endfor %}
+                    </select>
+                </div>
+
+
+                <div class="form-group">
+                    <label>Pool :</label>
+                    <select id="new_pool" name="new_pool[]">
+                        <option value="Tous" selected>Choisir une pool</option>
+                        {% set sortedPoolList = listAllPoolVM|sort((a, b) => a.nompool <=> b.nompool) %}
+                        {% for poolvm in sortedPoolList %}
+                            <option style="display: none;" value="{{ poolvm.id }}" name="new_pool[]" class="pool-option" data-caisse="{{ poolvm.idcaisseexploit.id }}">{{ poolvm.nompool }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <div id="new_addPool">
+                        <label><input type="checkbox" id="new_checkboxPool" style="visibility: hidden;">Ajouter une pool</label>
+                    </div>
+                </div>
+
+                <div class="form-group" style="display: none;" id="new_secondPool">
+                    <label>Seconde Pool :</label>
+                    <select id="new_pool1" name="new_pool[]">
+                        <option value="Tous" selected>Choisir une pool</option>
+                        {% set sortedPoolList = listAllPoolVM|sort((a, b) => a.nompool <=> b.nompool) %}
+                        {% for poolvm in sortedPoolList %}
+                            <option style="display: none;" value="{{ poolvm.id }}" name="new_pool[]" class="pool-option" data-caisse="{{ poolvm.idcaisseexploit.id }}">{{ poolvm.nompool }}</option>
+                        {% endfor %}
+                    </select>
+
+                    <div style="display: none;" id="new_deletePool">
+                        <label><input type="checkbox" id="new_checkboxPool1" style="visibility: hidden;">Supprimer la pool</label>
+                    </div>
+                </div>
+
+
+
+
+
+                <div class="form-group">
+                    <label id="new_scenarioLabel" style="display: none;">Scenario :</label>
+                    <select id="new_scenario" name="new_scenario" style="display: none;">
+                        <option value="Tous" selected>Choisir un scenario</option>
+                        {% set sortedScenarioList = listAllScenario|sort((a, b) => a.nomscenario <=> b.nomscenario) %}
+                        {% for scenario in sortedScenarioList %}
+                            <option value="{{ scenario.id }}">{{ scenario.nomscenario }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+
+                <div class="listProcess" style="display: none;" id="new_processList">
+                    <div class="form-group">
+                        <label id="new_processLabel">Process :</label><br>
+                        <input type="checkbox" id="new_selectAllCheckbox">Cocher tous les process</input>
+                        {% set sortedProcessList = listAllProcess|sort((a, b) => a.nomprocess <=> b.nomprocess) %}
+                        {% for process in sortedProcessList %}
+                        {% for scenario  in process.idscenario %}
+                            <div class="process-container" data-scenario="{{ scenario.id }}" style="display: none;">
+                                <input type="checkbox" class="process-checkbox1" id="process_{{ process.id }}" name="new_process[]" value="{{ process.id }}">
+                                <label for="process_{{ process.id }}">{{ process.nomprocess }}</label>
+                            </div>
+                        {% endfor %}
+                        {% endfor %}
+                        <label id="new_vmMax" style="color: #D14747;"></label>
+                    </div>
+                </div> 
+
+                <div class="vm-container" style="display: none;" id="new_VmList">  
+                    <div class="form-group">
+                        <label>VM : </label><br>
+                        <input type="checkbox" id="new_selectAllVm">Cocher toutes les vms</input>
+                        {% set sortedVMList = listAllVM|sort((a, b) => a.nomvm <=> b.nomvm) %}
+                        {% for vm in sortedVMList %}
+                            <div class="vm-container" data-pool="{{ vm.poolvm.id }}">
+                                <input type="checkbox" class="vm-checkbox1" id="vm_{{ vm.id }}" name="new_vm[]"  value="{{ vm.id }}">
+                                <label for="vm_{{ vm.id }}" class="unclickable-label">{{ vm.nomvm }}</label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="form-group">
+                    {% set sortedVMList = listAllVM|sort((a, b) => a.nomvm <=> b.nomvm) %}
+                        {% for vm in sortedVMList %}
+                            <div class="vm-container" data-second-pool="{{ vm.poolvm.id }}">
+                                <input type="checkbox" class="vm-checkbox1" id="vm_{{ vm.id }}" name="new_vm[]"  value="{{ vm.id }}">
+                                <label for="vm_{{ vm.id }}" class="unclickable-label">{{ vm.nomvm }}</label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div> 
+
+
+                <div class="form-group">
+                    <label>Nbre de dossiers :</label>
+                    <input type="number" id="new_nbredossier" name="new_nbredossier">
+                </div>
+
+                <div class="form-group" id="new_tempsTraitementContainer" style="display: none;">
+                    <label>Temps du traitement (approximatif) :</label>
+                    <span id="new_result"></span>
+                </div>
+
+                <div class="form-group">
+                    <label id="new_WeekendsAndHolidays" style="color: #D14747;"></label>
+                    <label>Date de début :</label>
+                    <input type="datetime-local" id="new_datedebut" name="new_datedebut"></label>
+                </div>
+
+                <div class="form-group">
+                    <label>Date de fin :</label>
+                    <input type="datetime-local" id="new_datefin" name="new_datefin"></label>
+                </div>
+
+                <div class="form-group">
+                    <label id="new_etapeLabel" style="display: none;">Étape :</label>
+                    <select id="new_etape" name="new_etape" style="display: none;">
+                        <option value="Tous" selected>Choisir une étape</option>
+                        <option value="Étape 1">Étape 1</option>
+                        <option value="Étape 2">Étape 2</option>
+                        <option value="Étape 3">Étape 3</option>
+                        <option value="Étape 4">Étape 4</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <button id="saveButtonEdit" class="btn-save">Modifier</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div class="modal draggable" id="errorModal">
+        <div class="modal-content">
+            <span class="close" id="closeError">&times;</span>
+            <h2>Ajouter un commentaire d'erreur</h2>
+                <div class="form-group">
+                    <textarea id="commentaireError" name="commentaire" style="resize:none;" rows="5" cols="33"></textarea><br><br>
+                    <label for="dateFinErreur">Date de fin :</label>
+                    <input type="datetime-local" id="dateFinErreur" name="dateFinErreur"></label>
+                </div>
+
+                <div class="form-group">
+                    <button id="validError" class="btn-save">Valider</button>
+                    <button id="deleteError" class="btn-save">Supprimer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal draggable" id="clotureModal">
+        <div class="modal-content">
+            <span class="close" id="closeCloture">&times;</span>
+            <h2>Ajouter un commentaire de clôture</h2>
+                <div class="form-group">
+                    <textarea id="commentaireCloture" name="commentaire" style="resize:none;" rows="5" cols="33"></textarea><br><br>
+                    <label for="dateFinCloture">Date de fin :</label>
+                    <input type="datetime-local" id="dateFinCloture" name="dateFinCloture"></label>
+                </div>
+
+                <div class="form-group">
+                    <button id="validCloture" class="btn-save">Valider</button>
+                    <button id="deleteCloture" class="btn-save">Supprimer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+
+    <div class="modal draggable" id="generalModal">
+        <div class="modal-content">
+        <span class="close" id="closeGeneral">&times;</span>
+            <div id="title"></div>
+            <div class="form-group">
+                <button id="errorButton" class="btn-save">Erreur</button>
+                <button id="closeButton" class="btn-save">Clôturer</button>
+            </div>
+            
+            <div class="form-group">
+                <button id="editButton" class="btn-save">Modifier</button>
+                <button id="deleteButton" class="btn-save">Supprimer</button>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal draggable" id="annoncesModal">
+        <div class="modal-content">
+        <span class="close" id="closeAnnonces">&times;</span>
+            <div id="titleAnnonces"></div>
+            <div class="form-group">
+                <button id="editButtonAnnonces" class="btn-save">Modifier</button>
+                <button id="deleteButtonAnnonces" class="btn-save">Supprimer</button>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal draggable" id="modalLegendColor">
+        <div class="modal-contentLegend">
+            <span id="titleLegend">Code couleur du calendrier</span><br><br><br>
+            <span class="close" id="closeModalLegendColor">&times;</span>
+            <div class="form-group">
+                <div class="legend-item">
+                    <button class="colorCode" id="code1"></button>
+                    <span class="textLegend">Traitement en cours</span>
+                </div>
+                <div class="legend-item">
+                    <button class="colorCode" id="code2"></button>
+                    <span class="textLegend">Traitement en clôture</span>
+                </div>
+                <div class="legend-item">
+                    <button class="colorCode" id="code3"></button>
+                    <span class="textLegend">Traitement en erreur</span>
+                </div>
+                <div class="legend-item">
+                    <button class="colorCode" id="code4"></button>
+                    <span class="textLegend">Traitement utilisant plusieurs pools</span>
+                </div>
+                <div class="legend-item">
+                    <button class="colorCode" id="code5"></button>
+                    <span class="textLegend">Traitement sélectionné</span>
+                </div>
+                <div class="legend-item">
+                    <button class="colorCode" id="code6"></button>
+                    <span class="textLegend">Annonce de priorité urgente</span>
+                </div>
+                <div class="legend-item">
+                    <button class="colorCode" id="code7"></button>
+                    <span class="textLegend">Annonce de priorité importante</span>
+                </div>
+                <div class="legend-item">
+                    <button class="colorCode" id="code8"></button>
+                    <span class="textLegend">Annonce de priorité normal</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+    <div class="modal draggable" id="modalPool">
+        <div class="modal-content">
+            <h2>Graphiques global des pools</h2>
+            <span class="close" id="closeModalPool">&times;</span>
+            <div class="form-group">
+                <canvas id="globalPoolChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+
+    
+
+    <div class="modal draggable" id="selectDateModal">
+        <div class="modal-content">
+            <h2>Sélectionner une date</h2>
+            <span class="close" id="closeDateModal">&times;</span>
+            <div class="form-group">
+                <input type="date" id="selectDateCalendar" name="selectDateCalendar"></input>
+            </div>
+        </div>
+    </div>
+{% endblock %}

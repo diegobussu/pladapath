@@ -1,0 +1,1177 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}PLADAPATH - Paramètres{% endblock %}
+
+{% block body %}
+
+{% block javascripts %}
+    {# {{ encore_entry_script_tags('app') }} #}
+    <script src="{{ asset('js/setting.js') }}"></script>
+    <script src="{{ asset('js/jquery-3.6.0.min.js') }}"></script>
+    <script src="{{ asset('js/popper.min.js') }}"></script>
+    <script src="{{ asset('js/bootstrap.min.js') }}"></script>
+{% endblock %}
+
+{% for flashError in app.flashes('error') %}
+    <div id="errorFlash" class="alert alert-danger mx-auto" style="width: 50%;">
+        {{ flashError }}
+    </div>
+    <script>
+        setTimeout(function() {
+            document.getElementById('errorFlash').style.display = 'none';
+        }, 3000); // (3 secondes)
+    </script>
+{% endfor %}
+
+{% for flashSuccess in app.flashes('success') %}
+    <div id="successFlash" class="alert alert-success mx-auto" style="width: 50%;">
+        {{ flashSuccess }}
+    </div>
+    <script>
+        setTimeout(function() {
+            document.getElementById('successFlash').style.display = 'none';
+        }, 1000); // (1 secondes)
+    </script>
+{% endfor %}
+
+
+<body>
+    <!-- BOUTTONS DE NAVIGATIONS DES PARAMETRES -->
+    <div class="container mt-5">
+        <div class="buttons d-flex justify-content-center nav mb-3">
+            <button data-id="mycaisse" class="button">CAISSE</button>
+            <button data-id="mypooldevm" class="button">POOL</button>
+            <button data-id="myvm" class="button">VM</button>
+            <button data-id="myscenario" class="button">SCENARIO</button>
+            <button data-id="myprocess" class="button">PROCESS</button>
+            <button data-id="mytraitment" class="button">TRAITEMENT</button>
+            <button data-id="mymessage" class="button">ANNONCES</button>
+            {% if currentUser in ['BUSSU DIEGO', 'MEHAL ESTHER', 'MOUSTAFA HASSAN IBRAHIM', 'BUN CHRISTELLE', 'KHIMOUD MASSINISSA'] %}
+                <button data-id="history" class="button">HISTORIQUE</button>
+            {% endif %}
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <!-- CAISSE -->
+    <div class="container content-panel pb-5" id="mycaisse">
+        <div class="row justify-content-center">
+        <h2>Caisses exploitantes</h2>
+            <div class="scroll-setting">
+                <table class="table table-hover table-bordered">
+                    <thead>
+                        <tr>
+                            <th scope="col">Numéro de la caisse</th>
+                            <th scope="col">Nom de la caisse</th>
+
+                            {% if 'ADMINISTRATEUR' in roleUser %}
+                                <th scope="col">Gérer</th>
+                            {% else %}
+                            {% endif %}
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% set sortedCaisseList = listAllCaisseExploit|sort((a, b) => a.numcaisse <=> b.numcaisse) %}
+                        {% for caisse in sortedCaisseList %}
+                        <tr>
+                            <td>
+                                {{ caisse.numcaisse }}
+                            </td>
+                            <td>
+                                {{ caisse.nomcaisse }}
+                            </td>
+                            
+                            {% if 'ADMINISTRATEUR' in roleUser %}
+                                <td>
+                                    <a href="{{ path('caisse_exploit_edit', {'id': caisse.id}) }}" caisse="color: white;">
+                                        <button class="button">
+                                            Modifier
+                                        </button>
+                                    </a>
+                                    <a href="{{ path('caisse_exploit_delete', {'id': caisse.id}) }}" data-id="{{ caisse.id }}" class="delete-link" style="color: white;">
+                                        <button class="button">
+                                            Supprimer
+                                        </button>
+                                    </a>
+                                </td>
+                            {% else %}
+                            {% endif %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% if 'ADMINISTRATEUR' in roleUser %}
+                <div class="action-buttons mt-3 mb-3 d-flex justify-content-center">
+                    <a href="{{ path('caisse_exploit_create') }}" style="color: white;">
+                        <button class="button">
+                            Ajouter
+                        </button>
+                    </a>
+                </div>
+                {% else %}
+                {% endif %}
+            </div>
+
+            <h2>Caisses de traitement</h2>
+            <input type="text" id="caisseSearch" placeholder="Rechercher par nom ou numéro">
+            <div class="scroll-caisse">
+                <table id="caisseTable" class="table table-hover table-bordered">
+                    <thead>
+                        <tr>
+                            <th scope="col">Numéro de la caisse</th>
+                            <th scope="col">Nom de la caisse</th>
+
+                            {% if 'ADMINISTRATEUR' in roleUser %}
+                                <th scope="col">Gérer</th>
+                            {% else %}
+                            {% endif %}
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% set sortedCaisseList = listAllCaisse|sort((a, b) => a.numcaisse <=> b.numcaisse) %}
+                        {% for caisse in sortedCaisseList %}
+                        <tr>
+                            <td>
+                                <a href="{{ path('info_caisse', {'id': caisse.id}) }}" style="text-decoration: underline;" title="Page caisse">
+                                    {{ caisse.numcaisse }}
+                                </a>
+                            </td>
+                            <td>
+                                <a href="{{ path('info_caisse', {'id': caisse.id}) }}" style="text-decoration: underline;" title="Page caisse">
+                                    {{ caisse.nomcaisse }}
+                                </a>
+                            </td>
+
+                            {% if 'ADMINISTRATEUR' in roleUser %}
+                                <td>
+                                    <a href="{{ path('caisse_edit', {'id': caisse.id}) }}" caisse="color: white;">
+                                        <button class="button">
+                                            Modifier
+                                        </button>
+                                    </a>
+                                    <a href="{{ path('caisse_delete', {'id': caisse.id}) }}" data-id="{{ caisse.id }}" class="delete-link" style="color: white;">
+                                        <button class="button">
+                                            Supprimer
+                                        </button>
+                                    </a>
+                                </td>
+                            {% else %}
+                            {% endif %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% if 'ADMINISTRATEUR' in roleUser %}
+            <div class="action-buttons mt-3 mb-3 d-flex justify-content-center">
+                <a href="{{ path('caisse_create') }}" style="color: white;">
+                    <button class="button">
+                        Ajouter
+                    </button>
+                </a>
+            </div>
+            {% else %}
+            {% endif %}
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <!-- POOL DE VM -->
+    <div class="container content-panel" id="mypooldevm">
+        <div class="row justify-content-center">
+            <input type="text" id="poolSearch" placeholder="Rechercher par nom">
+            <div class="scroll-setting">
+                <table id="poolVMTable" class="table table-hover table-bordered">
+                    <thead>
+                        <tr>
+                            <th scope="col">Num Caisse</th>
+                            <th scope="col">Nom Caisse</th>
+                            <th scope="col">Nom Pool</th>
+                            <th scope="col">Liste des VM</th>
+                            <th scope="col">Gérer</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% set sortedPoolList = listAllPoolVM|sort((a, b) => a.nompool <=> b.nompool) %}
+                        {% for poolvm in sortedPoolList %}
+                        <tr>
+                            <td>
+                                {% for caisse in listAllCaisseExploit %}
+                                {% if caisse.id == poolvm.idcaisseexploit.id %}
+                                    {{ caisse.numcaisse }}
+                                {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {% for caisse in listAllCaisseExploit %}
+                                {% if caisse.id == poolvm.idcaisseexploit.id %}
+                                    {{ caisse.nomcaisse }}
+                                {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td>{{ poolvm.nompool }}</td>
+                            <td>
+                                {% for vm in listAllVM %}
+                                {% if vm.poolvm.id == poolvm.id %}
+                                <option>{{ vm.nomvm }}</option>
+                                {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td>
+                                <a href="{{ path('poolvm_edit', {'id': poolvm.id}) }}" style="color: white;">
+                                    <button class="button">
+                                        Modifier
+                                    </button>
+                                </a>
+                                <a href="{{ path('poolvm_delete', {'id': poolvm.id}) }}" data-id="{{ poolvm.id }}" class="delete-link" style="color: white;">
+                                    <button class="button">
+                                        Supprimer
+                                    </button>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="action-buttons mt-3 mb-3 d-flex justify-content-center">
+                <a href="{{ path('poolvm_create') }}" style="color: white;">
+                    <button class="button">
+                        Ajouter
+                    </button>
+                </a>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <!-- MY VM -->
+    <div class="container content-panel" id="myvm">
+        <div class="row justify-content-center">
+        <input type="text" id="vmSearch" placeholder="Rechercher par nom ou numéro">
+            <div class="scroll-setting">
+                <table id="vmTable" class="table table-hover table-bordered">
+                    <thead>
+                        <tr>
+                            <th scope="col">Nom VM</th>
+                            <th scope="col">Pool</th>
+                            <th scope="col">Gérer</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% set sortedVMList = listAllVM|sort((a, b) => a.nomvm <=> b.nomvm) %}
+                        {% for vm in listAllVM %}
+                        <tr>
+                            <td>{{ vm.nomvm }}</td>
+                            <td>
+                                {% for PoolVm in listAllPoolVM %}
+                                {% if vm.PoolVm.id == PoolVm.id %}
+                                {{ vm.PoolVm.nompool }}
+                                {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td>
+                                <a href="{{ path('vm_edit', {'id': vm.id}) }}" style="color: white;">
+                                    <button class="button">
+                                        Modifier
+                                    </button>
+                                </a>
+                                <a href="{{ path('vm_delete', {'id': vm.id}) }}" data-id="{{ vm.id }}" class="delete-link" style="color: white;">
+                                    <button class="button">
+                                        Supprimer
+                                    </button>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="action-buttons mt-3 mb-3 d-flex justify-content-center">
+            <a href="{{ path('vm_create') }}" style="color: white;">
+                <button class="button">
+                    Ajouter
+                </button>
+            </a>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <!-- SCENARIO -->
+    <div class="container content-panel" id="myscenario">
+        <div class="row justify-content-center">
+        <input type="text" id="scenarioSearch" placeholder="Rechercher par nom">
+            <div class="scroll-setting">
+                <table id="scenarioTable" class="table table-hover table-bordered">
+                    <thead>
+                        <tr>
+                            <th scope="col">Nom Scenario</th>
+                            <th scope="col">Étape 2 (en jours)</th>
+                            <th scope="col">Étape 3 (en jours)</th>
+                            <th scope="col">Étape 4 (en jours)</th>
+                            <th scope="col">Périodicité</th>
+                            <th scope="col">Gérer</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% set sortedScenarioList = listAllScenario|sort((a, b) => a.nomscenario <=> b.nomscenario) %}
+                        {% for scenario in sortedScenarioList %}
+                        <tr>
+                            <td>{{ scenario.nomscenario }}</td>
+                            <td>{{ scenario.delai1 }}</td>
+                            <td>{{ scenario.delai2 }}</td>
+                            <td>{{ scenario.delai3 }}</td>
+                            <td>
+                            {% if scenario.periodicity in ["Hebdomadaire", "Mensuel", "Trimestriel"]  %}
+                                {{ scenario.periodicity }} 
+                            {% endif %}
+                            {% if scenario.untilwhen is not null  %}
+                                sur une période de {{ scenario.untilwhen }} an(s)
+                            {% endif %}
+                            </td>
+                            <td>
+                                <a href="{{ path('scenario_edit', {'id': scenario.id}) }}" style="color: white;">
+                                    <button class="button">
+                                        Modifier
+                                    </button>
+                                </a>
+                                <a href="{{ path('scenario_delete', {'id': scenario.id}) }}" data-id="{{ scenario.id }}" class="delete-link" style="color: white;">
+                                    <button class="button">
+                                        Supprimer
+                                    </button>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="action-buttons mt-3 mb-3 d-flex justify-content-center">
+                <a href="{{ path('scenario_create') }}" style="color: white;">
+                    <button class="button">
+                        Ajouter
+                    </button>
+                </a>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <!-- PROCESS -->
+    <div class="container content-panel" id="myprocess" style="max-width: 75%;">
+        <div class="row justify-content-center">
+        <input type="text" id="processSearch" placeholder="Rechercher par nom">
+            <div class="scroll-setting">
+                <table id="processTable" class="table table-hover table-bordered">
+                    <thead>
+                        <tr>
+                            <th scope="col">Process</th>
+                            <th scope="col">Temps/min/dossier</th>
+                            <th scope="col">Utilisable sur une seule VM</th>
+                            <th scope="col">Tourne uniquement entre</th>
+                            <th scope="col">Scenario</th>
+                            <th scope="col">Gérer</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% set sortedProcessList = listAllProcess|sort((a, b) => a.nomprocess <=> b.nomprocess) %}
+                        {% for process in sortedProcessList %}
+                        <tr>
+                            <td>{{ process.nomprocess }}</td>
+                            <td>{% if process.tempsminutedossier == 0 %}
+                                    0
+                                {% else %} 
+                                    {{ process.tempsminutedossier }}
+                                {% endif %}
+                            </td>
+                            <td>{% if process.vmmax == 0  %}
+                                    Non
+                                {% else %} 
+                                    Oui
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if process.starttime is null and process.endtime is null and process.weekdsendsandholidays == 0 %}
+                                    Tous les jours
+                                {% elseif process.starttime is null and process.endtime is null and process.weekdsendsandholidays == 1 %}
+                                    Tous les jours <br> (hors week-ends &amp; jours fériés)
+                                {% elseif process.weekdsendsandholidays == 1 %}
+                                    {{ process.starttime|date('H:i') }} et {{ process.endtime|date('H:i') }} <br> (hors week-ends &amp; jours fériés)
+                                {% else %} 
+                                    {{ process.starttime|date('H:i') }} et {{ process.endtime|date('H:i') }}
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% for scenario in process.idscenario %}
+                                    <option>{{ scenario.nomscenario }}</option>
+                                {% endfor %}
+                            </td>
+                            <td>
+                                <a href="{{ path('process_edit', {'id': process.id}) }}" style="color: white;">
+                                    <button class="button">
+                                        Modifier
+                                    </button>
+                                </a>
+                                <a href="{{ path('process_delete', {'id': process.id}) }}" data-id="{{ process.id }}" class="delete-link" style="color: white;">
+                                    <button class="button">
+                                        Supprimer
+                                    </button>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="action-buttons mt-3 mb-3 d-flex justify-content-center">
+                <a href="{{ path('process_create') }}" style="color: white;">
+                    <button class="button">
+                        Ajouter
+                </button>
+                </a>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <!-- TRAITEMENT -->
+    <div class="container content-panel" id="mytraitment" style="max-width:98%;">
+        <button id="VDMbutton" class="button">Val-de-Marne</button>
+        <button id="VAUbutton" class="button">Vaucluse</button>
+        <button id="PERIODbutton" class="button">Périodique</button><br><br>
+
+        <button id="filterButton" class="button mb-2">Filtrer</button>
+        <div class="row justify-content-center">
+            <input type="text" id="traitementSearch" placeholder="Rechercher un traitement">
+            <span><strong>Attention : les traitements contenant un scénario PUMA sont dépendants. (Exemple : si vous modifiez/supprimez l'étape 2, cela va aussi modifier/supprimer les étaptes 3 et 4)</strong></span>
+
+            <div class="scroll-setting" id="VAUTab" style="display: none"> 
+                <table id="traitementTable" class="table table-hover table-bordered">
+                    <thead>
+                        <tr>
+                            <th scope="col">Ajouté le</th>
+                            <th scope="col">Date de début</th>
+                            <th scope="col">Date de fin</th>
+                            <th scope="col">Caisse exploitante</th>
+                            <th scope="col">Caisse de traitement</th>
+                            <th scope="col">Pool</th>
+                            <th scope="col">Vm</th>
+                            <th scope="col">Scenario</th>
+                            <th scope="col">Process</th>
+                            <th scope="col">Étape</th>
+                            <th scope="col">Nbre de dossiers</th>
+                            <th scope="col">Commentaire d'erreur</th>
+                            <th scope="col">Commentaire de clôture</th>
+                            <th scope="col">État</th>
+                            <th scope="col">Auteur</th>
+                            <th scope="col">Gérer</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% set sortedTraitementList = ListAllTraitment|sort((a, b) => a.id <=> b.id) %}
+                        {% for traitement in sortedTraitementList %}
+                        {% if traitement.idcaisseexploit.nomcaisse == "Vaucluse" and traitement.idscenario.periodicity in ["Aucune"] %}
+                        <tr>
+                            <td>{{ traitement.datecreation|date('d/m/Y à H:i:s') }}</td>
+                            <td>{{ traitement.datedebut|date('d/m/Y à H:i:s') }}</td>
+                            <td>{{ traitement.datefin|date('d/m/Y à H:i:s') }}</td>
+                            <td>
+                                {% for caisse in listAllCaisseExploit %}
+                                {% if traitement.idcaisseexploit.id == caisse.id %}
+                                    {{ caisse.nomcaisse }} {{ caisse.numcaisse }}
+                                {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {% for caisse in listAllCaisse %}
+                                {% if traitement.idcaisse.id == caisse.id %}
+                                    {{ caisse.nomcaisse }} {{ caisse.numcaisse }}
+                                {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {% for pool in traitement.idpool %}
+                                {{ pool.nompool }}
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {% set vm_count = traitement.idvm | length %}
+                                {% for vm in traitement.idvm[:5] %}
+                                    {{ vm.nomvm }}
+                                {% endfor %}
+                                {% if vm_count > 5 %}
+                                    <br><span title="{% for vm in traitement.idvm[5:] %}{{ vm.nomvm }}{% if not loop.last %}, {% endif %}{% endfor %}">...</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% for scenario in listAllScenario %}
+                                {% if traitement.idscenario.id == scenario.id %}
+                                    {{ scenario.nomscenario }}
+                                {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {% for process in traitement.idprocess %}
+                                    {{ process.nomprocess }}
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {% if traitement.etape is defined %}
+                                    {{ traitement.etape }}
+                                {% else %}
+                                {% endif %}
+                            </td>
+                            <td>{{ traitement.nbredossier }}</td>
+                            <td>{{ traitement.errorcomment }} 
+                                {% if traitement.datefinerror is not null %}
+                                    , le {{ traitement.datefinerror|date('d/m/Y à H:i:s') }}
+                                {% endif %}
+                            </td>
+
+                            <td>{{ traitement.cloturecomment }} 
+                                {% if traitement.datefincloture is not null %}
+                                    , le {{ traitement.datefincloture|date('d/m/Y à H:i:s') }}
+                                {% endif %}
+                            </td>
+                            <td>{{ traitement.etat }}</td>
+                            <td>{{ traitement.auteur }}</td>
+                            <td>
+                                 <a href="{{ path('traitment_edit_extern', {'id': traitement.id, 'dateDebut': traitement.datedebut|date('Y-m-d') }) }}" data-id="{{ traitement.id }}">
+                                    <button class="button mb-3">
+                                        Modifier
+                                    </button>
+                                <a href="{{ path('traitment_delete', {'id': traitement.id}) }}" data-id="{{ traitement.id }}" class="delete-link" style="color: white;">
+                                    <button class="button">
+                                        Supprimer
+                                    </button>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+
+
+
+            <div class="scroll-setting" id="VDMTab" style="display: none"> 
+                <table id="traitementTable1" class="table table-hover table-bordered">
+                    <thead>
+                        <tr>
+                            <th scope="col">Ajouté le</th>
+                            <th scope="col">Date de début</th>
+                            <th scope="col">Date de fin</th>
+                            <th scope="col">Caisse exploitante</th>
+                            <th scope="col">Caisse de traitement</th>
+                            <th scope="col">Pool</th>
+                            <th scope="col">Vm</th>
+                            <th scope="col">Scenario</th>
+                            <th scope="col">Process</th>
+                            <th scope="col">Étape</th>
+                            <th scope="col">Nbre de dossiers</th>
+                            <th scope="col">Commentaire d'erreur</th>
+                            <th scope="col">Commentaire de clôture</th>
+                            <th scope="col">État</th>
+                            <th scope="col">Auteur</th>
+                            <th scope="col">Gérer</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% set sortedTraitementList = ListAllTraitment|sort((a, b) => a.id <=> b.id) %}
+                        {% for traitement in sortedTraitementList %}
+                        {% if traitement.idcaisseexploit.nomcaisse == "Val-de-marne" and traitement.idscenario.periodicity in ["Aucune"] %}
+                        <tr>
+                            <td>{{ traitement.datecreation|date('d/m/Y à H:i:s') }}</td>
+                            <td>{{ traitement.datedebut|date('d/m/Y à H:i:s') }}</td>
+                            <td>{{ traitement.datefin|date('d/m/Y à H:i:s') }}</td>
+                            <td>
+                                {% for caisse in listAllCaisseExploit %}
+                                {% if traitement.idcaisseexploit.id == caisse.id %}
+                                    {{ caisse.nomcaisse }} {{ caisse.numcaisse }}
+                                {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {% for caisse in listAllCaisse %}
+                                {% if traitement.idcaisse.id == caisse.id %}
+                                    {{ caisse.nomcaisse }} {{ caisse.numcaisse }}
+                                {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {% for pool in traitement.idpool %}
+                                {{ pool.nompool }}
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {% set vm_count = traitement.idvm | length %}
+                                {% for vm in traitement.idvm[:5] %}
+                                    {{ vm.nomvm }}
+                                {% endfor %}
+                                {% if vm_count > 5 %}
+                                    <br><span title="{% for vm in traitement.idvm[5:] %}{{ vm.nomvm }}{% if not loop.last %}, {% endif %}{% endfor %}">...</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% for scenario in listAllScenario %}
+                                {% if traitement.idscenario.id == scenario.id %}
+                                    {{ scenario.nomscenario }}
+                                {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {% for process in traitement.idprocess %}
+                                    {{ process.nomprocess }}
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {% if traitement.etape is defined %}
+                                    {{ traitement.etape }}
+                                {% else %}
+                                {% endif %}
+                            </td>
+                            <td>{{ traitement.nbredossier }}</td>
+                            <td>{{ traitement.errorcomment }} 
+                                {% if traitement.datefinerror is not null %}
+                                    , le {{ traitement.datefinerror|date('d/m/Y à H:i:s') }}
+                                {% endif %}
+                            </td>
+
+                            <td>{{ traitement.cloturecomment }} 
+                                {% if traitement.datefincloture is not null %}
+                                    , le {{ traitement.datefincloture|date('d/m/Y à H:i:s') }}
+                                {% endif %}
+                            </td>
+                            <td>{{ traitement.etat }}</td>
+                            <td>{{ traitement.auteur }}</td>
+                            <td>
+                                 <a href="{{ path('traitment_edit_extern', {'id': traitement.id, 'dateDebut': traitement.datedebut|date('Y-m-d') }) }}" data-id="{{ traitement.id }}">
+                                    <button class="button mb-3">
+                                        Modifier
+                                    </button>
+                                </a>
+                                <a href="{{ path('traitment_delete', {'id': traitement.id}) }}" data-id="{{ traitement.id }}" class="delete-link" style="color: white;">
+                                    <button class="button">
+                                        Supprimer
+                                    </button>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+
+
+            <div class="scroll-setting" id="PERIODTab" style="display: none"> 
+                <table id="traitementTable2" class="table table-hover table-bordered">
+                    <thead>
+                        <tr>
+                            <th scope="col">Ajouté le</th>
+                            <th scope="col">Date de début</th>
+                            <th scope="col">Date de fin</th>
+                            <th scope="col">Caisse exploitante</th>
+                            <th scope="col">Caisse de traitement</th>
+                            <th scope="col">Pool</th>
+                            <th scope="col">Vm</th>
+                            <th scope="col">Scenario</th>
+                            <th scope="col">Process</th>
+                            <th scope="col">Nbre de dossiers</th>
+                            <th scope="col">Commentaire d'erreur</th>
+                            <th scope="col">Commentaire de clôture</th>
+                            <th scope="col">État</th>
+                            <th scope="col">Auteur</th>
+                            <th scope="col">Périodicité</th>
+                            <th scope="col">Gérer</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% set sortedTraitementList = ListAllTraitment|sort((a, b) => a.id <=> b.id) %}
+                        {% for traitement in sortedTraitementList %}
+                        {% if traitement.idscenario.periodicity in ["Hedbomadaire", "Mensuel", "Trimestriel"] %}
+                        <tr>
+                            <td>{{ traitement.datecreation|date('d/m/Y à H:i:s') }}</td>
+                            <td>{{ traitement.datedebut|date('d/m/Y à H:i:s') }}</td>
+                            <td>{{ traitement.datefin|date('d/m/Y à H:i:s') }}</td>
+                            <td>
+                                {% for caisse in listAllCaisseExploit %}
+                                {% if traitement.idcaisseexploit.id == caisse.id %}
+                                    {{ caisse.nomcaisse }} {{ caisse.numcaisse }}
+                                {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {% for caisse in listAllCaisse %}
+                                {% if traitement.idcaisse.id == caisse.id %}
+                                    {{ caisse.nomcaisse }} {{ caisse.numcaisse }}
+                                {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {% for pool in traitement.idpool %}
+                                {{ pool.nompool }}
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {% set vm_count = traitement.idvm | length %}
+                                {% for vm in traitement.idvm[:5] %}
+                                    {{ vm.nomvm }}
+                                {% endfor %}
+                                {% if vm_count > 5 %}
+                                    <br><span title="{% for vm in traitement.idvm[5:] %}{{ vm.nomvm }}{% if not loop.last %}, {% endif %}{% endfor %}">...</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% for scenario in listAllScenario %}
+                                {% if traitement.idscenario.id == scenario.id %}
+                                    {{ scenario.nomscenario }}
+                                {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {% for process in traitement.idprocess %}
+                                    {{ process.nomprocess }}
+                                {% endfor %}
+                            </td>
+                            <td>{{ traitement.nbredossier }}</td>
+                            <td>
+                                {{ traitement.errorcomment }} 
+                                    {% if traitement.datefinerror is not null %}
+                                        , le {{ traitement.datefinerror|date('d/m/Y à H:i:s') }}
+                                    {% endif %}
+                            </td>
+
+                            <td>{{ traitement.cloturecomment }} 
+                                {% if traitement.datefincloture is not null %}
+                                    , le {{ traitement.datefincloture|date('d/m/Y à H:i:s') }}
+                                {% endif %}
+                            </td>
+                            <td>{{ traitement.etat }}</td>
+                            <td>{{ traitement.auteur }}</td>
+                            <td>
+                                {% for scenario in listAllScenario %}
+                                    {% if traitement.idscenario.id == scenario.id %}
+                                        {{ scenario.periodicity }}
+                                            {% if scenario.untilwhen is not null  %}
+                                                sur une période de {{ scenario.untilwhen }} an(s)
+                                            {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+                            </td>
+                            <td>
+                                 <a href="{{ path('traitment_edit_extern', {'id': traitement.id, 'dateDebut': traitement.datedebut|date('Y-m-d') }) }}" data-id="{{ traitement.id }}">
+                                    <button class="button mb-3">
+                                        Modifier
+                                    </button>
+                                </a>
+                                <a href="{{ path('traitment_delete', {'id': traitement.id}) }}" data-id="{{ traitement.id }}" class="delete-link" style="color: white;">
+                                    <button class="button">
+                                        Supprimer
+                                    </button>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="action-buttons mt-3 mb-3 d-flex justify-content-center">
+                <a href="{{ path('all_traitments') }}" style="color: white;">
+                    <button class="button">
+                        Options
+                    </button>
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Modal de filtrage -->
+    <div class="modal draggable" id="filterModal">
+        <div class="modal-content">
+            <span class="close" id="filterClose">&times;</span>
+            <div class="form-group">
+                <h2>Filtrage des traitements</h2>
+                <select id="filterType">
+                    <option selected>Sélectionner un filtre</option>
+                    <option value="caisse">Par caisse</option>
+                    <option value="pool">Par pool</option>
+                    <option value="scenario">Par scénario</option>
+                    <option value="etape">Par étape</option>
+                </select>
+            </div>
+            <div class="form-group" id="filterOptions" style="display: none;">
+                <label id="filterLabel"></label><br>
+                <select id="filterValue">
+                    <!-- Options seront ajoutées dynamiquement ici -->
+                </select>
+            </div>
+            <div class="form-group">
+                <button id="applyFilterButton" class="btn-save">Appliquer</button>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <!-- MESSAGE -->
+    <div class="container content-panel" id="mymessage" style="max-width:80%;">
+        <div class="row justify-content-center">
+        <input type="text" id="messageSearch" placeholder="Rechercher une annonce">
+            <div class="scroll-setting">
+                <table id="messageTable" class="table table-hover table-bordered">
+                    <thead>
+                        <tr>
+                            <th scope="col">Ajouté le</th>
+                            <th scope="col">Date de début</th>
+                            <th scope="col">Date de fin</th>
+                            <th scope="col">Titre</th>
+                            <th scope="col">Contenu</th>
+                            <th scope="col">Priorité</th>
+                            <th scope="col">Auteur</th>
+                            <th scope="col">Gérer</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% set sortedMessageList = ListAllMessage|sort((b, a) => a.datecreation <=> b.datecreation) %}  
+                        {% for message in sortedMessageList %}
+                        <tr>
+                            <td>{{ message.datecreation|date('d/m/Y à H:i:s') }}</td>
+                            <td>{{ message.datedebut|date('d/m/Y à H:i:s') }}</td>
+                            <td>{{ message.datefin|date('d/m/Y à H:i:s') }}</td>
+                            <td style="word-wrap: break-word; max-width: 50ch;">{{ message.titre }}</td>
+                            <td style="word-wrap: break-word; max-width: 50ch;">{{ message.contenu }}</td>
+                            <td>{{ message.priorite }}</td>
+                            <td>{{ message.auteur }}</td>
+                            <td>
+                                <a href="{{ path('message_edit', {'id': message.id}) }}" style="color: white;">
+                                    <button class="button">
+                                        Modifier
+                                    </button>
+                                </a>
+                                <a href="{{ path('message_delete', {'id': message.id}) }}" data-id="{{ message.id }}" class="delete-link" style="color: white;">
+                                    <button class="button">
+                                        Supprimer
+                                    </button>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="action-buttons mt-3 mb-3 d-flex justify-content-center">
+                <a href="{{ path('message_create') }}" style="color: white;">
+                    <button class="button">
+                        Ajouter
+                    </button>
+                </a>
+            </div>
+            <div class="action-buttons mt-3 mb-3 d-flex justify-content-center">
+                <a href="{{ path('all_logs_history') }}" style="color: white;">
+                    <button class="button">
+                        HISTORIQUE
+                    </button>
+                </a>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    {% if currentUser in ['BUSSU DIEGO', 'MEHAL ESTHER', 'MOUSTAFA HASSAN IBRAHIM', 'BUN CHRISTELLE', 'KHIMOUD MASSINISSA'] %}
+    <!-- HISTORIQUE -->
+    <div class="container content-panel" id="history">
+        <div class="row justify-content-center">
+        <input type="text" id="historySearch" placeholder="Rechercher une action">
+            <div class="scroll-historyLogs">
+                <table id="historyTable" class="table table-hover table-bordered">
+                    <thead>
+                        <tr>
+                            <th scope="col">Date</th>
+                            <th scope="col">Auteur</th>
+                            <th scope="col">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% set sortedLogsList = listAllLogs|sort((a, b) => (a.date > b.date) ? -1 : (a.date < b.date) ? 1 : (a.action|slice(-3) > b.action|slice(-3)) ? -1 : 1) %}
+                        {% for logs in sortedLogsList %}
+                        <tr>
+                            <td>{{ logs.date|date('d/m/Y à H:i:s') }}</td>
+                            <td>{{ logs.auteur }}</td>
+                            <td style="word-wrap: break-word; max-width: 100ch;">{{ logs.action }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+</body>
+</html>
+{% endblock %}

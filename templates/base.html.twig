@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{% block title %}PLADAPATH{% endblock %}</title>
+        <link rel="icon" href="{{ asset('img/calendar.png') }}">
+        {# Run `composer require symfony/webpack-encore-bundle` to start using Symfony UX #}
+        {% block stylesheets %}
+           {# } {{ encore_entry_link_tags('app') }} #}
+            <link rel="stylesheet" href="{{ asset('css/bootstrap.css') }}">
+            <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+        {% endblock %}
+    </head>
+    <body>
+        {% block header %}
+            {% include "header.html.twig"%}
+		{% endblock %}
+
+        {% block body %}
+        {% endblock %}
+        
+        {% block footer %}
+            {% include "footer.html.twig"%}
+		{% endblock %}
+    </body>
+</html>            
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Function to set a cookie
+        function setCookie(name, value, days) {
+            const expires = new Date();
+            expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
+            document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/`;
+        }
+
+        // Function to get a cookie value
+        function getCookie(name) {
+            const cookies = document.cookie.split(';');
+            for (const cookie of cookies) {
+                const [cookieName, cookieValue] = cookie.trim().split('=');
+                if (cookieName === name) {
+                    return cookieValue;
+                }
+            }
+            return null;
+        };
+
+        // Retrieve dark mode preference from cookie
+        const isDarkMode = getCookie('darkMode') === 'true';
+
+        const darkModeToggle = document.getElementById('dark-mode');
+        if (darkModeToggle) {
+            const moon = document.getElementById('moon');
+            const help = document.getElementById('help');
+            const setting = document.getElementById('setting');
+            const logo = document.getElementById('logo');
+            const agent = document.getElementById('agent');
+            const arrow = document.getElementById('arrow');
+            const zoom = document.getElementById('zoom');
+
+            // Set initial dark mode state based on cookie
+            document.body.classList.toggle('dark-mode', isDarkMode);
+
+            // Update logo based on dark mode status
+            if (isDarkMode) {
+                moon.src = "{{ asset('img/moon1.png') }}";
+                help.src = "{{ asset('img/help1.png') }}";
+                setting.src = "{{ asset('img/setting1.png') }}";
+                logo.src = "{{ asset('img/index1.png') }}";
+                agent.src = "{{ asset('img/agent1.png') }}";
+                if (zoom) {
+                    zoom.src = "{{ asset('img/zoom1.png') }}";
+                }
+            } else {
+                moon.src = "{{ asset('img/moon.png') }}";
+                help.src = "{{ asset('img/help.png') }}";
+                setting.src = "{{ asset('img/setting.png') }}";
+                logo.src = "{{ asset('img/index.png') }}";
+                agent.src = "{{ asset('img/agent.png') }}";
+                if (zoom) {
+                    zoom.src = "{{ asset('img/zoom.png') }}";
+                }
+            }
+
+            // Event listener for dark mode toggle
+            darkModeToggle.addEventListener('click', () => {
+                // Toggle dark mode class on body
+                document.body.classList.toggle('dark-mode');
+
+                // Update logo based on dark mode status
+                if (document.body.classList.contains('dark-mode')) {
+                    moon.src = "{{ asset('img/moon1.png') }}";
+                    help.src = "{{ asset('img/help1.png') }}";
+                    setting.src = "{{ asset('img/setting1.png') }}";
+                    logo.src = "{{ asset('img/index1.png') }}";
+                    agent.src = "{{ asset('img/agent1.png') }}";
+                    if (zoom) {
+                        zoom.src = "{{ asset('img/zoom1.png') }}";
+                    }
+                } else {
+                    moon.src = "{{ asset('img/moon.png') }}";
+                    help.src = "{{ asset('img/help.png') }}";
+                    setting.src = "{{ asset('img/setting.png') }}";
+                    logo.src = "{{ asset('img/index.png') }}";
+                    agent.src = "{{ asset('img/agent.png') }}";
+                    if (zoom) {
+                        zoom.src = "{{ asset('img/zoom.png') }}";
+                    }
+                }
+
+                // Save dark mode preference to cookie : 1 year
+                setCookie('darkMode', document.body.classList.contains('dark-mode'), 365);
+            });
+        }
+    });
+</script>

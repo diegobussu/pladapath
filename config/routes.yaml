@@ -1,0 +1,357 @@
+# Home
+
+home:
+    path: /
+    controller: App\Controller\HomeController::index
+
+info_caisse:
+    path: '/info_caisse/{id}'
+    controller: App\Controller\HomeController::infoCaisse
+    methods: ['GET']
+
+traitment_edit_extern:
+    path: '/traitment_edit_extern'
+    controller: App\Controller\HomeController::traitment_edit_extern
+    methods: ['GET']
+
+profile:
+    path: '/profile'
+    controller: App\Controller\HomeController::get_profile
+    methods: ['GET']
+
+get_all_processes:
+    path: '/get_all_processes'
+    controller: App\Controller\HomeController::getAllProcesses
+    methods: ['GET']
+
+get_all_pools:
+    path: '/get_all_pools'
+    controller: App\Controller\HomeController::getAllPools
+    methods: ['GET']
+
+
+# Message
+
+message_create:
+    path: '/message'
+    controller: App\Controller\MessageController::createMessage
+    methods: ['GET', 'POST']
+
+message_edit:
+    path: '/message/edit/{id}'
+    controller: App\Controller\MessageController::editMessage
+    methods: ['GET', 'POST']
+
+message_delete:
+    path: '/message/delete/{id}'
+    controller: App\Controller\MessageController::deleteMessage
+    methods: ['GET']
+
+all_logs_history:
+    path: '/all_logs_history'
+    controller: App\Controller\MessageController::allLogsHistory
+    methods: ['GET']
+
+
+# CaisseExploit
+
+caisse_exploit_create:
+    path: '/caisse_exploit/create'
+    controller: App\Controller\CaisseExploitController::createCaisse
+    methods: ['GET', 'POST']
+
+caisse_exploit_edit:
+    path: '/caisse_exploit/edit/{id}'
+    controller: App\Controller\CaisseExploitController::editCaisse
+    methods: ['GET', 'POST']
+
+caisse_exploit_delete:
+    path: '/caisse_exploit/delete/{id}'
+    controller: App\Controller\CaisseExploitController::deleteCaisse
+    methods: ['GET']
+
+# Caisse
+
+caisse_create:
+    path: '/caisse/create'
+    controller: App\Controller\CaisseController::createCaisse
+    methods: ['GET', 'POST']
+
+caisse_edit:
+    path: '/caisse/edit/{id}'
+    controller: App\Controller\CaisseController::editCaisse
+    methods: ['GET', 'POST']
+
+caisse_delete:
+    path: '/caisse/delete/{id}'
+    controller: App\Controller\CaisseController::deleteCaisse
+    methods: ['GET']
+
+
+# Pool
+
+poolvm_create:
+    path: '/poolvm'
+    controller: App\Controller\PoolVmController::createPoolVm
+    methods: ['GET', 'POST']
+
+poolvm_edit:
+    path: '/poolvm/edit/{id}'
+    controller: App\Controller\PoolVmController::editPoolVm
+    methods: ['GET', 'POST']
+
+poolvm_delete:
+    path: '/poolvm/delete/{id}'
+    controller: App\Controller\PoolVmController::deletePoolVm
+    methods: ['GET']
+
+get_poolvm_names:
+    path: '/get_poolvm_names'
+    controller: App\Controller\PoolVmController::getCaisseExploitNames
+    methods: ['GET']
+
+
+# Vm
+
+get_pools:
+    path: /get_pools
+    controller: App\Controller\VmController::getPools
+    methods: ['GET']
+
+vm_create:
+    path: '/vm'
+    controller: App\Controller\VmController::createVm
+    methods: ['GET', 'POST']
+
+vm_edit:
+    path: '/vm/edit/{id}'
+    controller: App\Controller\VmController::editVm
+    methods: ['GET', 'POST']
+
+vm_delete:
+    path: '/vm/delete/{id}'
+    controller: App\Controller\VmController::deleteVm
+    methods: ['GET']
+
+
+# Scenario
+
+scenario_create:
+    path: '/scenario'
+    controller: App\Controller\ScenarioController::createScenario
+    methods: ['GET', 'POST']
+
+scenario_edit:
+    path: '/scenario/edit/{id}'
+    controller: App\Controller\ScenarioController::editScenario
+    methods: ['GET', 'POST']
+
+scenario_delete:
+    path: '/scenario/delete/{id}'
+    controller: App\Controller\ScenarioController::deleteScenario
+    methods: ['GET']
+
+
+# Process
+
+process_create:
+    path: '/process'
+    controller: App\Controller\ProcessController::createProcess
+    methods: ['GET', 'POST']
+
+process_edit:
+    path: '/process/edit/{id}'
+    controller: App\Controller\ProcessController::editProcess
+    methods: ['GET', 'POST']
+
+process_delete:
+    path: '/process/delete/{id}'
+    controller: App\Controller\ProcessController::deleteProcess
+    methods: ['GET']
+
+
+# ReleaseNotes
+
+release_notes:
+    path: '/release_notes'
+    controller: App\Controller\ReleaseNotesController::index
+    methods: ['GET']
+
+
+# Treatment
+
+traitment_create:
+    path: '/traitment_create'
+    controller: App\Controller\TreatmentController::createTraitment
+    methods: ['POST']
+
+traitment_delete:
+    path: '/traitment_delete/{id}'
+    controller: App\Controller\TreatmentController::deleteTraitment
+    methods: ['GET']
+
+traitement_delete:
+    path: '/traitement_delete/{id}'
+    controller: App\Controller\CalendarController::deleteTraitement
+    methods: ['GET']
+
+traitement_edit:
+    path: '/traitement_edit/{id}'
+    controller: App\Controller\TreatmentController::editTraitment
+    methods: ['GET', 'POST']
+    
+all_traitments:
+    path: '/all_traitments'
+    controller: App\Controller\TreatmentController::all_traitments
+    methods: ['GET']
+
+deleteAllTraitments:
+    path: '/deleteAllTraitments'
+    controller: App\Controller\TreatmentController::deleteAllTraitments
+    methods: ['GET', 'POST']
+
+modifyAllTraitments:
+    path: '/modifyAllTraitments'
+    controller: App\Controller\TreatmentController::modifyAllTraitments
+    methods: ['GET', 'POST']
+
+generate_pdf:
+    path: '/generate_pdf/{id}'
+    controller: App\Controller\TreatmentController::generatePdf
+    methods: ['GET', 'POST']
+
+traitment_delete_extern:
+    path: '/traitment_delete_extern/{id}'
+    controller: App\Controller\TreatmentController::deleteTraitmentExtern
+    methods: ['GET', 'POST']
+
+traitment_cloture:
+    path: '/traitment_cloture/{id}'
+    controller: App\Controller\CalendarController::clotureTraitement
+    methods: ['POST']
+    
+traitment_erreur:
+    path: '/traitment_erreur/{id}'
+    controller: App\Controller\CalendarController::erreurTraitement
+    methods: ['POST']
+
+delete_cloture:
+    path: '/delete_cloture/{id}'
+    controller: App\Controller\CalendarController::deleteCloture
+    methods: ['POST']
+    
+delete_error:
+    path: '/delete_error/{id}'
+    controller: App\Controller\CalendarController::deleteError
+    methods: ['POST']
+
+get_annonces_events:
+    path: '/get_annonces_events'
+    controller: App\Controller\CalendarController::getAnnoncesEvents
+    methods: ['GET']
+
+get_pool_vm_resources:
+    path: '/get_pool_vm_resources'
+    controller: App\Controller\CalendarController::getPoolVMResources
+    methods: ['GET']
+
+get_traitement_events:
+    path: '/get_traitement_events'
+    controller: App\Controller\CalendarController::getTraitementEvents
+    methods: ['GET']
+
+verify_role:
+    path: '/verify_role'
+    controller: App\Controller\CalendarController::verifyRole
+    methods: ['GET']
+
+holidays:
+    path: '/holidays'
+    controller: App\Controller\CalendarController::holidays
+    methods: ['GET']
+
+
+# Contact
+
+contact:
+    path: '/contact'
+    controller: App\Controller\ContactController::index
+    methods: ['GET']
+
+contactForm:
+    path: '/contact_form'
+    controller: App\Controller\ContactController::contactForm
+    methods: ['POST']
+
+
+# Stats
+
+statistiques:
+    path: '/statistiques'
+    controller: App\Controller\StatsController::index
+    methods: ['GET']
+
+get_stats_pools:
+    path: '/get_stats_pools'
+    controller: App\Controller\StatsController::getStatsPools
+    methods: ['GET']
+
+get_stats_process:
+    path: '/get_stats_process'
+    controller: App\Controller\StatsController::getStatsProcess
+    methods: ['GET']
+
+
+# Checkbox
+
+process_checkbox:
+    path: '/process_checkbox'
+    controller: App\Controller\CheckboxController::ProcessCheckboxChange
+    methods: ['GET']
+
+vm_checkbox:
+    path: '/vm_checkbox'
+    controller: App\Controller\CheckboxController::VmCheckboxChange
+    methods: ['GET']
+
+nbreDossier_change:
+    path: '/nbreDossier_change'
+    controller: App\Controller\CheckboxController::nbreDossierChange
+    methods: ['GET']
+
+selectAllCheckbox:
+    path: '/selectAllCheckbox'
+    controller: App\Controller\CheckboxController::selectAllCheckbox
+    methods: ['GET']
+
+dateDebut_change:
+    path: '/dateDebut_change'
+    controller: App\Controller\CheckboxController::dateDebutChange
+    methods: ['GET']
+
+vm_max:
+    path: '/vm_max'
+    controller: App\Controller\CheckboxController::VmMax
+    methods: ['GET']
+
+WeekendsAndHolidays:
+    path: '/WeekendsAndHolidays'
+    controller: App\Controller\CheckboxController::WeekendsAndHolidays
+    methods: ['GET']
+
+etape_select:
+    path: '/etape_select'
+    controller: App\Controller\CheckboxController::EtapeSelect
+    methods: ['GET']
+
+periodicity:
+    path: '/periodicity'
+    controller: App\Controller\CheckboxController::Periodicity
+    methods: ['GET']
+
+# Settings
+
+setting:
+    path: '/setting'
+    controller: App\Controller\SettingController::index
+    methods: ['GET']

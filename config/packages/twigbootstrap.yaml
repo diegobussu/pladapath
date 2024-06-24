@@ -1,0 +1,8 @@
+twig_bootstrap:
+  # Requis - les classes am-coul-* sont à votre disposition afin de varier la mise en forme
+  # (cf. http://docs-projet.cnqd.cnamts.fr/docs/TwigBootstrapBundle/latest/technique/charte-am.html)
+  app_title: '<span class="am-coul-turquoise">Skeleton v5.4.14</span> AM'
+  # Optionnel
+  app_subtitle: Seine-Saint-Denis
+  # Optionnel
+  app_version: 1.2.3

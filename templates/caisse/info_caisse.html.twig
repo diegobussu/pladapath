@@ -1,0 +1,230 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}PLADAPATH - Caisse n° {{ caisse.numcaisse }} {% endblock %}
+
+{% block body %}
+
+{% block javascripts %}
+    {# {{ encore_entry_script_tags('app') }} #}
+    <script>
+        document.addEventListener('DOMContentLoaded', function() { 
+            window.addEventListener('beforeunload', function() {
+                resetForm();
+            });
+
+            // Fonction pour réinitialiser les champs du formulaire
+            function resetForm() {
+                const traitementSearch = document.getElementById("traitementSearch");
+                traitementSearch.value = '';
+            }
+
+            function filterTable() {
+                var input = document.getElementById("traitementSearch").value.toLowerCase();
+                var table = document.getElementById("traitementTable");
+                var rows = table.getElementsByTagName("tr");
+
+                for (var i = 1; i < rows.length; i++) {
+                    var row = rows[i];
+                    var rowData = row.textContent.toLowerCase();
+
+                    if (rowData.includes(input)) {
+                        row.style.display = "";
+                    } else {
+                        row.style.display = "none";
+                    }
+                }
+            }
+
+            document.getElementById("traitementSearch").addEventListener("input", filterTable);
+
+
+            document.getElementById("history").addEventListener("click", function() {
+                var historyTable = document.getElementById("historyTable");
+                if (historyTable.style.display === "none" || historyTable.style.display === "") {
+                    historyTable.style.display = "block";
+                } else {
+                    historyTable.style.display = "none";
+                }
+            });
+
+            // popup delete traitment
+            const deleteLinks = document.querySelectorAll('.delete-link');
+            deleteLinks.forEach(function(link) {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const traitementId = this.getAttribute('data-id');
+                    
+                    if (confirm('Êtes-vous sûr de vouloir supprimer ce champs ?')) {
+                        window.location.href = this.getAttribute('href');
+                    }
+                });
+            });
+
+        });
+    </script>
+{% endblock %}
+
+
+{% for flashError in app.flashes('error') %}
+    <div id="errorFlash" class="alert alert-danger mx-auto" style="width: 50%;">
+        {{ flashError }}
+    </div>
+    <script>
+        setTimeout(function() {
+            document.getElementById('errorFlash').style.display = 'none';
+        }, 3000); // (3 secondes)
+    </script>
+{% endfor %}
+
+{% for flashSuccess in app.flashes('success') %}
+    <div id="successFlash" class="alert alert-success mx-auto" style="width: 50%;">
+        {{ flashSuccess }}
+    </div>
+    <script>
+        setTimeout(function() {
+            document.getElementById('successFlash').style.display = 'none';
+        }, 3000); // (3 secondes)
+    </script>
+{% endfor %}
+
+<a style="color:#fff" href="{{ path('home') }}">
+    <button class="returnToSettingButton button">
+        Retour
+    </button>
+</a>
+
+<body>
+    <div class="container" id="mycaisse">
+        <div class="row justify-content-center">
+            <p class="title-style title-style-dark-mode">Caisse n° {{ caisse.numcaisse }} - {{ caisse.nomcaisse }}</p>
+            <input type="text" id="traitementSearch" placeholder="Rechercher un traitement">
+            <div class="scroll-setting"><br>
+                <table id="traitementTable" class="table table-hover table-bordered">
+                    <thead>
+                        <tr>
+                            <th scope="col">Date de début</th>
+                            <th scope="col">Date de fin</th>
+                            <th scope="col">Caisse exploitante</th>
+                            <th scope="col">Scenario</th>
+                            <th scope="col">Étape</th>
+                            <th scope="col">Commentaire d'erreur</th>
+                            <th scope="col">Commentaire de clôture</th>
+                            <th scope="col">Nbre de dossiers</th>
+                            <th scope="col">État</th>
+
+                            {% if 'EXPLOITANT' or 'ADMINISTRATEUR' in roleUser %}
+                                <th scope="col">Modifier</th>
+                                <th scope="col">Supprimer</th>
+                            {% else %}
+                            {% endif %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% set sortedTraitementList = listAllTraitement|sort((a, b) => a.id <=> b.id) %}
+                        {% for traitement in sortedTraitementList %}
+                            {% if traitement.idcaisse.id == caisse.id %}
+                                <tr>
+                                    <td>{{ traitement.datedebut|date('d/m/Y à H:i:s') }}</td>
+                                    <td>{{ traitement.datefin|date('d/m/Y à H:i:s') }}</td>
+                                    <td>
+                                        {% for caisse in listAllCaisseExploit %}
+                                        {% if traitement.idcaisseexploit.id == caisse.id %}
+                                            {{ caisse.nomcaisse }} {{ caisse.numcaisse }}
+                                        {% endif %}
+                                        {% endfor %}
+                                    </td>
+                                    <td>
+                                        {% for scenario in listAllScenario %}
+                                        {% if traitement.idscenario.id == scenario.id %}
+                                            {{ scenario.nomscenario }}
+                                        {% endif %}
+                                        {% endfor %}
+                                    </td>
+                                    <td>
+                                        {% if traitement.etape is defined %}
+                                            {{ traitement.etape }}
+                                        {% else %}
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ traitement.errorcomment }} 
+                                        {% if traitement.datefinerror is not null %}
+                                            , le {{ traitement.datefinerror|date('d/m/Y à H:i:s') }}
+                                        {% endif %}
+                                    </td>
+
+                                    <td>{{ traitement.cloturecomment }} 
+                                        {% if traitement.datefincloture is not null %}
+                                            , le {{ traitement.datefincloture|date('d/m/Y à H:i:s') }}
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ traitement.nbredossier }}</td>
+                                    <td>{{ traitement.etat }}</td>
+
+
+                                    {% if 'EXPLOITANT'or 'ADMINISTRATEUR' in roleUser %}
+                                    <td>
+                                        <a href="{{ path('traitment_edit_extern', {'id': traitement.id, 'dateDebut': traitement.datedebut|date('Y-m-d') }) }}" data-id="{{ traitement.id }}">
+                                            <button class="button">
+                                                Modifier
+                                            </button>
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="{{ path('traitment_delete_extern', {'id': traitement.id}) }}" data-id="{{ traitement.id }}" class="delete-link" style="color: white;">
+                                            <button class="button">
+                                                Supprimer
+                                            </button>
+                                        </a>
+                                    </td>
+                                    {% else %}
+                                    {% endif %}
+
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="action-buttons mt-3 mb-3 d-flex justify-content-center">
+                <button id="history" class="button" style="color: white;">
+                    Voir l'historique
+                </button>
+
+                <a href="{{ path('generate_pdf', {'id': caisse.id}) }}">
+                    <button class="button" style="color: white;">
+                        Télécharger (pdf)
+                    </button>
+                </a>
+            </div>
+        </div>
+
+
+        <div class="row justify-content-center" id="historyTable" style="display: none;">
+            <div class="scroll-setting">
+                <table id="traitementTable" class="table table-hover table-bordered">
+                    <thead>
+                        <tr>
+                            <th scope="col">Date</th>
+                            <th scope="col">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% set sortedLogsList = listAllLogs|sort((a, b) => (a.date > b.date) ? -1 : (a.date < b.date) ? 1 : (a.action|slice(-3) > b.action|slice(-3)) ? -1 : 1) %}
+                        {% for logs in sortedLogsList %}
+                            {% if logs.action is defined and caisse.numcaisse in logs.action and caisse.nomcaisse in logs.action or 'Modification de tous les traitements' in logs.action %}
+                                <tr>
+                                    <td>{{ logs.date|date('d/m/Y à H:i:s') }}</td>
+                                    <td>{{ logs.action }}</td>
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div><br><br><br>
+
+    </div>
+</body>
+</html>
+{% endblock %}

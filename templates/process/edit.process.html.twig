@@ -1,0 +1,54 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier un process{% endblock %}
+
+{% block body %}
+
+{% for flashError in app.flashes('error') %}
+    <div id="errorFlash" class="alert alert-danger mx-auto" style="width: 50%;">
+        {{ flashError }}
+    </div>
+    <script>
+        setTimeout(function() {
+            document.getElementById('errorFlash').style.display = 'none';
+        }, 2000); // (2 secondes)
+    </script>
+{% endfor %}
+
+{% for flashSuccess in app.flashes('success') %}
+    <div id="successFlash" class="alert alert-success mx-auto" style="width: 50%;">
+        {{ flashSuccess }}
+    </div>
+    <script>
+        setTimeout(function() {
+            document.getElementById('successFlash').style.display = 'none';
+        }, 2000); // (2 secondes)
+    </script>
+{% endfor %}
+
+    <a style="color:#fff" href="{{ path('setting') }}">
+        <button class="returnToSettingButton button">
+            Retour
+        </button>
+    </a>
+
+    <div class="container">
+        <section class="row justify-content-center">
+            <div class="col-md-6 text-center col-form-label">  
+              
+                <p class="title-style title-style-dark-mode">Modifier un Process</p>
+
+                {{ form_start(form, {'attr': {'class': 'd-inline-block mt-4 col-form-label'}}) }}
+                    {{ form_widget(form) }}
+                    <button type="submit"  class="button mb-5" onclick="return confirmModify();">Modifier</button>
+                {{ form_end(form) }}
+            </div>
+        </section>
+    </div>
+
+    <script>
+        function confirmModify() {
+            return confirm("Êtes-vous sûr de vouloir modifier ce process ?");
+        }
+    </script>
+{% endblock %}

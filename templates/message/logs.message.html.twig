@@ -1,0 +1,79 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Historiques des annonces{% endblock %}
+
+{% block body %}
+
+{% block javascripts %}
+    {# {{ encore_entry_script_tags('app') }} #}
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            window.addEventListener('beforeunload', function() {
+                resetForm();
+            });
+
+            function resetForm() {
+                const annonces_historySearch = document.getElementById("annonces_historySearch");
+                annonces_historySearch.value = '';
+            }
+
+            function filterHistoryTable() {
+                var input = document.getElementById("annonces_historySearch").value.toLowerCase();
+                var table = document.getElementById("annonces_historyTable");
+                var rows = table.getElementsByTagName("tr");
+
+                for (var i = 1; i < rows.length; i++) {
+                    var row = rows[i];
+                    var rowData = row.textContent.toLowerCase();
+
+                    if (rowData.includes(input)) {
+                        row.style.display = "";
+                    } else {
+                        row.style.display = "none";
+                    }
+                }
+            }
+
+            document.getElementById("annonces_historySearch").addEventListener("input", filterHistoryTable);
+        });
+    
+    </script>
+{% endblock %}
+
+    <a style="color:#fff" href="{{ path('setting') }}">
+        <button class="returnToSettingButton button">
+            Retour
+        </button>
+    </a>
+
+
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+        <p class="title-style title-style-dark-mode">Historique des annonces</p>
+        <input type="text" id="annonces_historySearch" placeholder="Rechercher une annonce">
+            <div class="scroll-historyMessage"><br>
+                <table id="annonces_historyTable" class="table table-hover table-bordered">
+                    <thead>
+                        <tr>
+                            <th scope="col">Date</th>
+                            <th scope="col">Auteur</th>
+                            <th scope="col">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% set sortedLogsList = listAllLogs|sort((a, b) => (a.date > b.date) ? -1 : (a.date < b.date) ? 1 : (a.action|slice(-3) > b.action|slice(-3)) ? -1 : 1) %}
+                        {% for logs in sortedLogsList %}
+                            {% if logs.action is defined and 'd\'une annonce :' in logs.action %}
+                                <tr>
+                                    <td>{{ logs.date|date('d/m/Y à H:i:s') }}</td>
+                                    <td>{{ logs.auteur }}</td>
+                                    <td style="word-wrap: break-word; max-width: 100ch;">{{ logs.action }}</td>
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

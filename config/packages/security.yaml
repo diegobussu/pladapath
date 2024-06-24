@@ -1,0 +1,33 @@
+# https://symfony.com/doc/current/security.html
+security:
+    encoders:
+        Cnam\AuthSrvSecBundle\User\User: plaintext
+
+    # https://symfony.com/doc/current/security.html#b-configuring-how-users-are-loaded
+    providers:
+        authsrvsec:
+            id: Cnam\AuthSrvSecBundle\Security\User\UserProvider
+        authsrvsec_bouchon:
+            id: Cnam\AuthSrvSecBundle\Security\User\UserProviderBouchon
+        cnam_security:
+            chain:
+                providers: ['authsrvsec', 'authsrvsec_bouchon']
+
+    firewalls:
+        dev:
+            # disables authentication for assets and the profiler, adapt it according to your needs
+            pattern:  ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+
+        login:
+            pattern:  ^/authsrvsec
+            security: false
+
+        secured_area:
+            pattern:    ^/
+            entry_point: Cnam\AuthSrvSecBundle\Authenticator\BouchonAuthenticator
+            provider: cnam_security
+            guard:
+                authenticators:
+                    - Cnam\AuthSrvSecBundle\Authenticator\BouchonAuthenticator
+                    - Cnam\AuthSrvSecBundle\Authenticator\SrvSecAuthenticator

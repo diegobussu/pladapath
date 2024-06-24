@@ -1,0 +1,171 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier tous les traitements{% endblock %}
+
+{% block body %}
+    
+{% block javascripts %}
+    <script src="{{ asset('js/alltraitments.js') }}"></script>
+{% endblock %}
+
+{% for flashError in app.flashes('error') %}
+    <div id="errorFlash" class="alert alert-danger mx-auto" style="width: 50%;">
+        {{ flashError }}
+    </div>
+    <script>
+        setTimeout(function() {
+            document.getElementById('errorFlash').style.display = 'none';
+        }, 2000); // (2 secondes)
+    </script>
+{% endfor %}
+
+{% for flashSuccess in app.flashes('success') %}
+    <div id="successFlash" class="alert alert-success mx-auto" style="width: 50%;">
+        {{ flashSuccess }}
+    </div>
+    <script>
+        setTimeout(function() {
+            document.getElementById('successFlash').style.display = 'none';
+        }, 2000); // (2 secondes)
+    </script>
+{% endfor %}
+
+    <a style="color:#fff" href="{{ path('setting') }}">
+        <button class="returnToSettingButton button">
+            Retour
+        </button>
+    </a>
+
+    <div class="container pt-5">
+    <p class="title-style title-style-dark-mode">Le résultats de ces actions vont impacter tous les traitements.</p>
+        <div class="buttons d-flex justify-content-center nav mb-3">
+            <button data-id="editAll" class="button">Modifier</button>
+            <button data-id="deleteAll" class="button">Supprimer</button>
+        </div>
+
+
+        <div class="container content-panel pb-5" id="editAll">
+            <div class="justify-content-center">
+                <form action="{{ path('modifyAllTraitments') }}" method="post" id="traitmentsForm">
+                    <div class="form-group">
+                        <label>Caisse exploitante :</label>
+                        <select id="caisse_exploit" name="caisse_exploit">
+                            <option value="Tous" selected>Choisir une caisse</option>
+                                {% set sortedCaisseList = listAllCaisseExploit|sort((a, b) => a.numcaisse <=> b.numcaisse) %}
+                                {% for caisse in sortedCaisseList %}
+                                    <option value="{{ caisse.id }}">{{ caisse.nomcaisse }} {{ caisse.numcaisse }}</option>
+                                {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Pool (facultatif) :</label>
+                        <select id="pool" name="pool">
+                            <option value="Tous" selected>Choisir une pool</option>
+                            {% set sortedPoolList = listAllPoolVM|sort((a, b) => a.nompool <=> b.nompool) %}
+                            {% for poolvm in sortedPoolList %}
+                                <option style="display: none;" value="{{ poolvm.id }}" name="pool" class="pool-option" data-caisse="{{ poolvm.idcaisseexploit.id }}">{{ poolvm.nompool }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>À partir de (facultatif) :</label>
+                        <input type="datetime-local" id="date" name="date"></label>
+                    </div><br><br>
+
+                    <div class="form-group">
+                        <label>Avancer ou reculer les traitements de :</label><br><br>
+                        <div class="form-group">
+                            <label>Jour(s) :</label>
+                            <input type="number" id="day" name="day">
+                        </div>
+                        <div class="form-group">
+                            <label>Heure(s) :</label>
+                            <input type="number" id="hour" name="hour">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Minute(s) :</label>
+                            <input type="number" id="min" name="min">
+                        </div>
+                    </div>
+
+                    <span class="title-style-dark-mode">Cette modification prends en compte uniquement les traitements "En cours".</span> <br><br>
+
+                    <div class="form-group">
+                        <button id="sendBtn" class="button">Envoyez</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+
+
+        <div class="container content-panel pb-5" id="deleteAll">
+            <div class="justify-content-center">
+                <form action="{{ path('deleteAllTraitments') }}" method="post" id="traitmentsForm">
+
+                    <div class="form-group">
+                        <label>Supprimer les traitements contenant :</label><br><br>
+                        <select id="deleteOption" name="deleteOption">
+                            <option value="Tous" selected>Choisir une option</option>
+                            <option value="caisse">Caisse</option>
+                            <option value="pool">Pool</option>
+                            <option value="scenario">Scénario</option>
+                            <option value="periodique">Périodique</option>
+                        </select>
+                    </div><br>
+
+                    <div class="form-group" style="display: none;" id="filterModalCaisse">
+                        <select id="filterValueCaisse" name="filterValueCaisse">
+                            <option value="Tous" selected>Choisir un filtre</option>
+                            {% for caisse in listAllCaisse %}
+                                <option value="{{ caisse.id }}">{{ caisse.nomcaisse }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="display: none;" id="filterModalPool">
+                        <select id="filterValuePool" name="filterValuePool">
+                            <option value="Tous" selected>Choisir un filtre</option>
+                            {% for pool in listAllPoolVM %}
+                                <option value="{{ pool.id }}">{{ pool.nompool }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="display: none;" id="filterModalScenario">
+                        <select id="filterValueScenario" name="filterValueScenario">
+                            <option value="Tous" selected>Choisir un filtre</option>
+                            {% for scenario in listAllScenario %}
+                                <option value="{{ scenario.id }}">{{ scenario.nomscenario }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="form-group" style="display: none;" id="filterModalPeriod">
+                        <select id="filterValuePeriod" name="filterValuePeriod">
+                            <option value="Tous" selected>Choisir un filtre</option>
+                            <option value="Hebdomadaire">Hebdomadaire</option>
+                            <option value="Mensuel">Mensuel</option>
+                            <option value="Trimestriel">Trimestriel</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>À partir de (facultatif) :</label><br><br>
+                        <input type="datetime-local" id="date1" name="date1"></label>
+                    </div>
+
+                    <span class="title-style-dark-mode">Cette suppresion prends en compte tous les traitements.</span> <br><br>
+
+                    <div class="form-group">
+                        <button id="sendBtn1" class="button">Envoyez</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}

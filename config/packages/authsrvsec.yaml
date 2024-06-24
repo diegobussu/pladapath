@@ -1,0 +1,8 @@
+auth_srv_sec:
+    system: SY_PLADAPATH
+    mapping_role:
+        CONSULT-PLADAPATH: CONSULTANT
+        EXPLOIT-PLADAPATH: EXPLOITANT
+        ADMIN-PLADAPATH: ADMINISTRATEUR
+    mapping_default_role: CONSULTANT
+    bouchon_redirect: home

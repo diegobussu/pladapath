@@ -1,0 +1,43 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light mb-3" id="navbar">
+    <!-- Logo on the far left -->
+    <a class="navbar-brand mx-4" href="{{ path('home') }}" style="display: flex; align-items: center;">
+        <img id="logo" src="{{ asset('img/index.png') }}" title="Accueil">
+    </a>
+
+    <!-- Toggler for mobile view -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+        <span class="visually-hidden">Toggle navigation</span>
+    </button>
+
+    <!-- Centered Website Name and Right-aligned links -->
+    <div class="collapse navbar-collapse justify-content-lg-between text-center" id="navbarContent">
+        <div class="navbar-text mx-lg-auto">
+            <a class="navbar-brand fw-bold fs-2" id="pladapath" href="{{ path('home') }}">PLADAPATH</a>
+        </div>
+
+        <div class="mx-4 px-5"></div>
+
+        <ul class="navbar-nav mt-2 mt-lg-0">
+            <li class="nav-item" title="Profil">
+                <a href= "{{ path('profile') }}">
+                    <img id="agent" src="{{ asset('img/agent.png') }}" width='40' height='40'>
+                    <br><p id="num_agent">{{ num_agent }}</p>
+                </a>
+            </li>
+            <li class="nav-item mx-4 px-3">
+                <a href= "{{ path('contact') }}">
+                    <img id="help" src="{{ asset('img/help.png') }}" width='40' height='40' title="Aide">
+                </a>
+            </li>
+            <li class="nav-item" id="dark-mode">
+                <img id="moon" src="{{ asset('img/moon.png') }}" width='40' height='40' title="Mode nuit" style="cursor: pointer;">
+            </li>
+            <li class="nav-item mx-4 px-3">
+                <a href= "{{ path('setting') }}">
+                    <img id="setting" src="{{ asset('img/setting.png') }}" width='40' height='40' title="Paramètre">
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>

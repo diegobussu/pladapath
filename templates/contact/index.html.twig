@@ -1,0 +1,118 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}PLADAPATH - Contactez-nous{% endblock %}
+
+{% block body %}
+
+    {% block javascripts %}
+        {# {{ encore_entry_script_tags('app') }} #}
+        <script>
+            document.addEventListener('DOMContentLoaded', function() { 
+
+                window.addEventListener('beforeunload', function() {
+                    resetForm();
+                });
+
+                function resetForm() {
+                    const message = document.getElementById('message');
+                    const subject = document.getElementById("subject");
+                    subject.value = 'Tous';
+                    message.value = '';
+                }
+
+                const contactBtn = document.getElementById('contactBtn');
+
+                contactBtn.addEventListener("click", (event) => {
+                    if (!validateForm()) {
+                        event.preventDefault();
+                    }
+                });
+
+                function validateForm() {
+                    var valid = true;
+
+                    const subject = document.getElementById("subject");
+                    if (subject.value === "Tous") {
+                        alert("Veuillez choisir un sujet.");
+                        valid = false;
+                    }
+
+                    const trimmedMessage = message.value.trim();
+
+                    if (trimmedMessage === "") {
+                        alert("Veuillez écrire un message.");
+                        valid = false;
+                    } else if (trimmedMessage.length <= 20) {
+                        alert("Le message doit contenir plus de 20 caractères.");
+                        valid = false;
+                    }
+                    else if (trimmedMessage.length >= 250) {
+                        alert("Le message doit contenir moins de 250 caractères.");
+                        valid = false;
+                    }
+
+                    return valid;
+                }
+            });
+        </script>
+    {% endblock %}
+    
+    {% for flashError in app.flashes('error') %}
+        <div id="errorFlash" class="alert alert-danger mx-auto" style="width: 50%;">
+            {{ flashError }}
+        </div>
+        <script>
+            setTimeout(function() {
+                document.getElementById('errorFlash').style.display = 'none';
+            }, 3000); // 3000 millisecondes (3 secondes)
+        </script>
+    {% endfor %}
+
+    {% for flashSuccess in app.flashes('success') %}
+        <div id="successFlash" class="alert alert-success mx-auto" style="width: 50%;">
+            {{ flashSuccess }}
+        </div>
+        <script>
+            setTimeout(function() {
+                document.getElementById('successFlash').style.display = 'none';
+            }, 3000); // 3000 millisecondes (3 secondes)
+        </script>
+    {% endfor %}
+
+        <div class="container pt-5">
+            <div class="justify-content-center">
+                <form action="{{ path('contactForm') }}" method="post" id="contactForm">
+
+                    <div class="form-group">
+                        <label>Nature du problème :</label><br><br>
+                        <select id="subject" name="subject">
+                            <option value="Tous" selected>Choisir un sujet</option>
+                            <option value="1">Problème concernant le calendrier</option>
+                            <option value="3">Problème concernant un traitement</option>
+                            <option value="4">Problème concernant un affichage</option>
+                            <option value="5">Problème concernant une connexion</option>
+                            <option value="6">Problème concernant un ajout de champs</option>
+                            <option value="7">Problème concernant une suppression de champs</option>
+                            <option value="8">Problème concernant un modification de champs</option>
+                            <option value="9">Problème concernant un filtre</option>
+                            <option value="9">Proposition à propos d'une fonctionnalité</option>
+                            <option value="9">Autre</option>
+                        </select>
+                    </div>
+                    <br>
+
+                    <div class="form-group">
+                        <label for="message">Précisez votre problème :</label><br><br>
+                        <textarea id="message" name="message" class="form-control custom-textarea" style="width: 50%; margin:auto; resize:none;" rows="5"></textarea>
+                    </div>
+
+                    <br>
+                    
+                    <div class="form-group">
+                        <button id="contactBtn" class="btn-save">Envoyez</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+{% endblock %}
+

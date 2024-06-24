@@ -1,0 +1,63 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier une annonce{% endblock %}
+
+{% block body %}
+
+{% for flashError in app.flashes('error') %}
+    <div id="errorFlash" class="alert alert-danger mx-auto" style="width: 50%;">
+        {{ flashError }}
+    </div>
+    <script>
+        setTimeout(function() {
+            document.getElementById('errorFlash').style.display = 'none';
+        }, 2000); // (2 secondes)
+    </script>
+{% endfor %}
+
+{% for flashSuccess in app.flashes('success') %}
+    <div id="successFlash" class="alert alert-success mx-auto" style="width: 50%;">
+        {{ flashSuccess }}
+    </div>
+    <script>
+        setTimeout(function() {
+            document.getElementById('successFlash').style.display = 'none';
+        }, 2000); // (2 secondes)
+    </script>
+{% endfor %}
+
+<a style="color:#fff" href="{{ path('setting') }}">
+    <button class="returnToSettingButton button">
+        Retour
+    </button>
+</a>
+
+<div class="container">
+    <section class="row justify-content-center">
+        <div class="col-md-6 text-center mt-4">
+
+            <p class="title-style title-style-dark-mode">Modifier une annonce</p>
+            
+            {{ form_start(form, {'attr': {'class': 'mt-4'}}) }}
+                {% for field in form %}
+                {% if field.vars.name != '_token' %}
+                    <div class="form-group mb-4">
+                        {{ form_label(field) }}
+                        {{ form_widget(field, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(field) }}
+                    </div>
+                {% endif %}
+                {% endfor %}
+                <button type="submit" class="button d-block mx-auto" onclick="return confirmEdit();">Modifier</button>
+            {{ form_end(form) }}
+            
+        </div>
+    </section>
+</div>
+
+<script>
+    function confirmEdit() {
+        return confirm("Êtes-vous sûr de vouloir modifier cette annonce ?");
+    }
+</script>
+{% endblock %}

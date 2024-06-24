@@ -1,0 +1,67 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}PLADAPATH - Profil{% endblock %}
+
+{% block body %}
+    {% block javascripts %}
+        {# {{ encore_entry_script_tags('app') }} #}
+        <script src="{{ asset('js/jquery-3.6.0.min.js') }}"></script>
+
+    <script>
+        $(document).ready(function () {
+            // Cacher le conteneur des messages au chargement de la page
+            $("#messagesContainer").hide();
+
+            // Gérer le clic sur le bouton "Voir"
+            $("#toggleMessages").click(function () {
+                $("#messagesContainer").toggle(); // Afficher ou masquer les messages lorsque le bouton est cliqué
+            });
+        });
+    </script>
+    {% endblock %}
+
+    <div class="container mt-5">
+        <div class="card">
+            <div class="card-header">
+                <p class="title-style">Profil Agent - {{ nom_agent }} {{ prenom_agent }}</p>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-3">Idenfiant :</dt>
+                    <dd class="col-sm-9">{{ identifiant }}</dd>
+
+                    <dt class="col-sm-3">Nom :</dt>
+                    <dd class="col-sm-9">{{ nom_agent }}</dd>
+
+                    <dt class="col-sm-3">Prénom :</dt>
+                    <dd class="col-sm-9">{{ prenom_agent }}</dd>
+
+                    <dt class="col-sm-3">Numéro d'agent :</dt>
+                    <dd class="col-sm-9">{{ num_agent }}</dd>
+
+                    <dt class="col-sm-3">Rôle(s) :</dt>
+                    <dd class="col-sm-9">{{ role }}</dd>
+
+                    <dt class="col-sm-3">Caisse :</dt>
+                    <dd class="col-sm-9">{{ codeOrganisme }}</dd>
+
+                    <dt class="col-sm-3" id="historiqueMessage">Historique :</dt>
+                    <dd class="col-sm-9" id="historiqueMessage1">
+                        <button class="btn btn-link" id="toggleMessages">Voir</button>
+                        <div id="messagesContainer" class="scroll-profile" style="display: none;">
+                            {% set sortedLogsList = listAllLogs|sort((a, b) => (a.date > b.date) ? -1 : (a.date < b.date) ? 1 : (a.action|slice(-3) > b.action|slice(-3)) ? -1 : 1) %}
+                            {% for logs in sortedLogsList %}
+                                {% if logs.auteur is defined and logs.auteur == nom_agent ~ ' ' ~ prenom_agent %}
+                                    <p><strong>Le {{ logs.date|date('d/m/Y à H:i:s') }}</strong></p><br>
+                                    <p>{{ logs.action }}</p><br>
+                                {% endif %}
+                                {% else %}
+                                <p>Aucun historique trouvé.</p>
+                            {% endfor %}
+                        </div>
+                    </dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+{% endblock %}

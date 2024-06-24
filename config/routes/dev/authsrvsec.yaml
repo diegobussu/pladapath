@@ -1,0 +1,3 @@
+authsrvsec_controllers:
+    resource: '@AuthSrvSecBundle/Controller/'
+    type: annotation
